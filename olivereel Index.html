@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OliveReel: live box office for India and Pakistan</title>
+<meta name="description" content="Day-wise box office, live estimates, advance booking and industry pages for Indian and Pakistani cinema.">
+<meta name="theme-color" content="#12150c">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OliveReel: live box office for India and Pakistan">
+<meta property="og:description" content="Day-wise box office, live estimates, advance booking and industry pages for Indian and Pakistani cinema.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235d7029'/%3E%3Cpath d='M12 9l12 7-12 7z' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12150c; --bg-deep: #0c0f07; --surface: #1a1f10; --surface2: #222915; --line: #323b20;
+  --text: #eef1e0; --muted: #a9b48d; --accent: #b5c17f; --accent-ink: #1b2208; --accent-strong: #c9d68f;
+  --live: #f2b544; --up: #7fd18b; --down: #f0806f; --focus: #d6e29a;
+  --radius: 16px; --radius-sm: 10px;
+  --display: "Fraunces", Georgia, serif; --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f4f6ea; --bg-deep: #e9edd8; --surface: #ffffff; --surface2: #eef1e0; --line: #d9dfc2;
+  --text: #1f2610; --muted: #5a6340; --accent: #5d7029; --accent-ink: #ffffff; --accent-strong: #3f4f19;
+  --live: #9a5a06; --up: #1d7442; --down: #ad3c2c; --focus: #3f4f19;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--body); background: var(--bg); color: var(--text); line-height: 1.55; font-size: 16px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.2; font-weight: 700; }
+a { color: inherit; text-decoration: none; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.shell { width: min(1280px, 100% - 32px); margin-inline: auto; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.muted { color: var(--muted); }
+.block { display: block; }
+.skip-link { position: absolute; left: 12px; top: -60px; z-index: 200; padding: 8px 14px; background: var(--accent); color: var(--accent-ink); border-radius: 8px; font-weight: 600; }
+.skip-link:focus { top: 12px; }
+:where(a, button, input, select, [tabindex]):focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+#pageTitle:focus { outline: none; }
+main:focus { outline: none; }
+
+/* ribbon + header */
+.ribbon { background: var(--surface2); color: var(--muted); font-size: .85rem; text-align: center; padding: 6px 16px; border-bottom: 1px solid var(--line); }
+.ribbon strong { color: var(--live); }
+.site-header { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--bg-deep) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.bar { display: flex; align-items: center; gap: 24px; min-height: 64px; }
+.logo { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: 1.4rem; color: var(--accent-strong); }
+.logo-mark { width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-size: .9rem; }
+.site-header nav { flex: 1; }
+.site-header nav ul { display: flex; gap: 6px; list-style: none; }
+.site-header nav a { display: block; padding: 8px 12px; border-radius: 999px; font-weight: 500; color: var(--muted); }
+.site-header nav a:hover { color: var(--text); background: var(--surface); }
+.site-header nav a[aria-current="page"] { color: var(--text); background: var(--surface2); }
+.bar-tools { display: flex; gap: 8px; }
+.icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); display: inline-grid; place-items: center; font-size: 1.05rem; }
+.icon-btn:hover { background: var(--surface2); }
+.menu-btn { display: none; }
+.subnav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; }
+.subnav a { flex: none; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); font-size: .9rem; font-weight: 500; color: var(--muted); }
+.subnav a:hover { color: var(--text); border-color: var(--accent); }
+.subnav a[aria-current="page"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.search-panel { padding-bottom: 14px; }
+.search-panel[hidden] { display: none; }
+.search { width: 100%; padding: 12px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.search-results { list-style: none; margin-top: 8px; display: grid; gap: 4px; }
+.search-results li { padding: 8px 12px; border-radius: 8px; background: var(--surface); }
+.search-results a { display: block; font-weight: 600; }
+
+/* layout */
+#app { padding-block: 24px 56px; }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
+.col-main, .col-side, .tab-body, .live-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; min-width: 0; }
+.tab-body { gap: 16px; }
+.live-list { gap: 0; }
+.col-side { position: sticky; top: 150px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; min-width: 0; }
+.panel-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.panel-title { font-size: 1.25rem; display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.panel-head .panel-title { margin-bottom: 0; }
+.panel-head .link-more { margin-left: auto; }
+.link-more { color: var(--accent-strong); font-weight: 600; font-size: .92rem; display: inline-block; margin-top: 10px; }
+.panel-head .link-more { margin-top: 0; }
+.link-more:hover { text-decoration: underline; }
+.page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.page-head h1 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
+.empty { padding: 22px; border: 1px dashed var(--line); border-radius: var(--radius-sm); color: var(--muted); }
+.empty-cell { text-align: center; padding: 28px; color: var(--muted); }
+.note { color: var(--muted); font-size: .85rem; margin-top: 12px; }
+
+/* controls */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 20px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface2); font-weight: 600; font-size: .95rem; }
+.btn:hover { border-color: var(--accent); }
+.btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-small { padding: 6px 14px; font-size: .85rem; }
+.btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.tabs { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; margin-bottom: 16px; }
+.page-head .tabs { margin-bottom: 0; }
+.tab { border: 0; background: none; padding: 8px 18px; border-radius: 999px; font-weight: 600; font-size: .92rem; color: var(--muted); }
+.tab:hover { color: var(--text); }
+.tab[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); font-size: .85rem; font-weight: 500; }
+.chip:hover { border-color: var(--accent); }
+.chip[aria-current="page"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.dot-live { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--live); box-shadow: 0 0 0 0 color-mix(in srgb, var(--live) 60%, transparent); animation: pulse 1.8s ease-out infinite; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 8px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.tag { display: inline-block; padding: 3px 12px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: .78rem; font-weight: 700; }
+.sample-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--live); color: var(--live); font-size: .72rem; font-weight: 600; }
+.badge { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: .78rem; font-weight: 600; white-space: nowrap; vertical-align: middle; }
+.b-stage { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent-strong); }
+.b-live { background: color-mix(in srgb, var(--live) 25%, transparent); color: var(--live); }
+.b-fc { border: 1px dashed var(--live); color: var(--live); }
+.v-hit { background: color-mix(in srgb, var(--up) 22%, transparent); color: var(--up); }
+.v-avg { background: color-mix(in srgb, var(--live) 22%, transparent); color: var(--live); }
+.v-flop { background: color-mix(in srgb, var(--down) 22%, transparent); color: var(--down); }
+.v-early { background: var(--surface2); color: var(--muted); }
+.trend { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.trend.up { color: var(--up); } .trend.down { color: var(--down); } .trend.flat { color: var(--muted); }
+.select { width: 100%; padding: 11px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); margin-top: 6px; }
+
+/* hero slider */
+.hero { display: grid; gap: 10px; }
+.hero-slide { position: relative; display: grid; grid-template-columns: 1fr 1fr; min-height: 380px; overflow: hidden; border-radius: 20px; border: 1px solid var(--line);
+  background: linear-gradient(150deg, hsl(var(--h) 50% 30%), hsl(calc(var(--h) + 35) 46% 11%)); color: #fff; }
+.hero-art { position: relative; order: 2; display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; overflow: hidden; }
+.hero-art-ind { font-family: var(--display); font-weight: 700; font-size: clamp(2.4rem, 7vw, 5.4rem); line-height: .95; color: transparent; -webkit-text-stroke: 1.5px rgb(255 255 255 / .35); letter-spacing: -.02em; }
+.hero-art-title { font-family: var(--display); font-weight: 700; font-size: clamp(1.2rem, 2.6vw, 1.9rem); color: rgb(255 255 255 / .75); margin-top: 8px; }
+.hero-info { display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 28px; background: linear-gradient(90deg, rgb(0 0 0 / .35), transparent); }
+.hero-info .tag { align-self: flex-start; }
+.hero-info h2 { font-size: clamp(1.8rem, 3.6vw, 2.8rem); color: #fff; }
+.hero-line { color: rgb(255 255 255 / .8); }
+.hero-num { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+.hero-num strong { font-family: var(--display); font-size: clamp(1.8rem, 3.4vw, 2.6rem); color: var(--live); font-variant-numeric: tabular-nums; }
+.hero-num .trend.up { color: #9be6a6; } .hero-num .trend.down { color: #ffb0a3; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.hero-slide .btn { background: rgb(255 255 255 / .12); border-color: rgb(255 255 255 / .4); color: #fff; }
+.hero-slide .btn-primary { background: #fff; color: #1b2208; border-color: #fff; }
+.hero-controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.hero-dots { display: flex; gap: 8px; }
+.dot-btn { width: 12px; height: 12px; border-radius: 50%; border: 0; background: var(--line); padding: 0; position: relative; }
+.dot-btn::after { content: ""; position: absolute; inset: -10px; }
+.dot-btn[aria-current="true"] { background: var(--accent); width: 30px; border-radius: 999px; }
+
+/* live rows */
+.live-list { display: grid; }
+.live-row { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; padding: 16px 0; border-top: 1px solid var(--line); }
+.live-row:first-child { border-top: 0; padding-top: 4px; }
+.live-main h3 { font-size: 1.15rem; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.live-main .chips { margin-top: 10px; }
+.live-amt { text-align: right; display: grid; gap: 2px; }
+.amt-live { font-family: var(--display); font-size: 1.7rem; color: var(--live); font-variant-numeric: tabular-nums; }
+.live-amt small { color: var(--muted); }
+.amt-trend { font-size: .9rem; }
+.show-all-wrap { text-align: center; padding-top: 6px; border-top: 1px solid var(--line); }
+.show-all { border: 0; background: none; color: var(--accent-strong); font-weight: 700; padding: 12px 20px; }
+.show-all:hover { text-decoration: underline; }
+.show-all[hidden] { display: none; }
+.live-val { font-variant-numeric: tabular-nums; }
+
+/* posters */
+.poster { flex: none; display: grid; place-items: center; text-align: center; color: #fff; border-radius: 10px; overflow: hidden;
+  background: linear-gradient(155deg, hsl(var(--h) 52% 38%), hsl(calc(var(--h) + 35) 48% 14%)); }
+.poster-sm { width: 54px; height: 76px; }
+.poster-ini { font-family: var(--display); font-weight: 700; font-size: 1.2rem; letter-spacing: .02em; }
+.poster-lg { width: 190px; height: 270px; border-radius: 16px; padding: 16px; }
+.poster-name { font-family: var(--display); font-weight: 700; font-size: 1.7rem; line-height: 1.1; }
+
+/* industries */
+.ind-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.ind-card { display: grid; gap: 4px; padding: 16px; border-radius: 14px; border: 1px solid var(--line); border-left: 6px solid hsl(var(--h) 55% 50%); background: var(--bg); }
+.ind-card:hover { border-color: hsl(var(--h) 55% 50%); }
+.ind-card strong { font-family: var(--display); font-size: 1.15rem; }
+.ind-num { font-size: 1.05rem; font-weight: 700; color: var(--accent-strong); font-variant-numeric: tabular-nums; margin-top: 6px; }
+.ind-num em { font-style: normal; font-weight: 500; color: var(--muted); font-size: .85rem; }
+.ind-head { padding: 28px; border-radius: 20px; display: grid; gap: 16px; color: #fff; background: linear-gradient(150deg, hsl(var(--h) 50% 30%), hsl(calc(var(--h) + 35) 46% 11%)); }
+.ind-head h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); color: #fff; }
+.ind-head p { color: rgb(255 255 255 / .85); }
+.ind-head .chip { background: rgb(255 255 255 / .1); border-color: rgb(255 255 255 / .3); color: #fff; }
+
+/* stats */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 12px; }
+.stat { display: grid; gap: 4px; align-content: start; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); }
+.stat-label { color: var(--muted); font-size: .88rem; font-weight: 500; }
+.stat-value { font-family: var(--display); font-size: 1.55rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.stat-sub { color: var(--muted); font-size: .85rem; }
+.stat-live { border-color: var(--live); } .stat-live .stat-value { color: var(--live); }
+.stat-accent .stat-value { color: var(--accent-strong); }
+.meter { position: relative; height: 8px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); margin-top: 6px; overflow: hidden; }
+.meter-fill { height: 100%; background: var(--accent); }
+.meter-mark { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--live); }
+
+/* film page */
+.film-head { display: flex; gap: 24px; padding: 24px; border-radius: 20px; background: linear-gradient(150deg, hsl(var(--h) 45% 20%), var(--surface) 70%); border: 1px solid var(--line); flex-wrap: wrap; }
+.film-info { flex: 1; min-width: 260px; display: grid; gap: 10px; align-content: end; }
+.film-info h1 { font-size: clamp(1.9rem, 4vw, 3rem); }
+.film-badges { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.crumbs { font-size: .88rem; color: var(--muted); }
+.crumbs a:hover { color: var(--text); text-decoration: underline; }
+
+/* charts */
+.chart { width: 100%; height: auto; display: block; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .axis, .chart .axis-unit, .chart .bar-val { fill: var(--muted); font-size: 11px; font-family: var(--body); }
+.chart .bar-val { fill: var(--text); font-weight: 600; }
+.bar.done { fill: var(--accent); }
+.bar.live { fill: var(--live); }
+.bar.fc { fill: color-mix(in srgb, var(--live) 14%, transparent); stroke: var(--live); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.line { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.line.line-a, .dot.line-a { stroke: var(--accent); } .dot.line-a { fill: var(--accent); }
+.line.line-b, .dot.line-b { stroke: var(--live); } .dot.line-b { fill: var(--live); }
+.area.line-a { fill: color-mix(in srgb, var(--accent) 18%, transparent); stroke: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: .85rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; }
+.sw.done, .sw.line-a { background: var(--accent); } .sw.live, .sw.line-b { background: var(--live); }
+.sw.fc { border: 1.5px dashed var(--live); }
+.spark { width: 84px; height: 26px; } .spark path { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; } .spark-live path { stroke: var(--live); }
+
+/* tables */
+.table-tools { margin-bottom: 12px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg); }
+table { width: 100%; border-collapse: collapse; min-width: 560px; }
+.daily th, .daily td { white-space: nowrap; }
+th, td { padding: 12px 14px; text-align: left; font-size: .92rem; vertical-align: top; }
+thead th { background: var(--surface2); color: var(--text); font-weight: 600; white-space: nowrap; border-bottom: 1px solid var(--line); }
+tbody th { font-weight: 600; }
+tbody tr { border-top: 1px solid var(--line); }
+tbody tr:hover { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+td.num { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.live-cell { color: var(--live); }
+.row-live { background: color-mix(in srgb, var(--live) 10%, transparent); }
+.row-fc { color: var(--muted); }
+.sort-button { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; text-align: left; white-space: nowrap; }
+.sort-button:hover { color: var(--accent-strong); }
+.film-link { font-weight: 600; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.film-link:hover { color: var(--accent-strong); text-decoration-color: var(--accent); }
+.occ { text-align: center; background: color-mix(in srgb, var(--accent) calc(var(--o, 0) * 70%), transparent); font-variant-numeric: tabular-nums; }
+.defs { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; }
+.defs dt { font-weight: 700; } .defs dd { color: var(--muted); }
+
+/* sidebar lists */
+.side-list { list-style: none; display: grid; }
+.side-list li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.side-list li:first-child { border-top: 0; padding-top: 0; }
+.side-list small { display: block; }
+.side-amt { text-align: right; display: grid; font-variant-numeric: tabular-nums; }
+.clock-list { display: grid; gap: 12px; }
+.clock { display: grid; gap: 2px; padding: 12px 14px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); }
+.clock-time { font-family: var(--display); font-size: 1.5rem; color: var(--accent-strong); font-variant-numeric: tabular-nums; }
+.bars-list { list-style: none; display: grid; gap: 10px; }
+.bars-list li { display: grid; grid-template-columns: 1fr 90px auto; gap: 10px; align-items: center; font-size: .9rem; }
+.bar-track { height: 8px; border-radius: 999px; background: var(--bg); overflow: hidden; }
+.bar-fill { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+.stack { display: flex; height: 34px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+.stack-seg { display: grid; place-items: center; font-size: .78rem; font-weight: 700; color: var(--accent-ink); overflow: hidden; white-space: nowrap; }
+.s0 { background: var(--accent); } .s1 { background: var(--live); } .s2 { background: #7fd18b; } .s3 { background: #8fb3e8; } .s4 { background: #e0a0c8; }
+
+/* news, upcoming, compare */
+.news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.news-card { display: grid; gap: 8px; align-content: start; padding: 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); }
+.news-card h3 { font-size: 1.05rem; }
+.news-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.up-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.up-card { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); }
+.up-card h3 { font-size: 1.05rem; }
+.cmp-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; font-weight: 600; }
+.notfound { display: grid; gap: 14px; justify-items: start; padding: 32px; }
+
+/* rise and fall graphs, day strip */
+.block { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.seg { stroke-width: 3.5; stroke-linecap: round; }
+.seg.up { stroke: var(--up); } .seg.down { stroke: var(--down); }
+.pt { stroke: var(--surface); stroke-width: 2; }
+.pt.first { fill: var(--accent); } .pt.up { fill: var(--up); } .pt.down { fill: var(--down); }
+.pt-val { font-size: 11px; font-weight: 700; font-family: var(--body); }
+.pt-val.first { fill: var(--accent-strong); } .pt-val.up { fill: var(--up); } .pt-val.down { fill: var(--down); }
+.dbar.up { fill: var(--up); } .dbar.down { fill: var(--down); }
+.chart .zero { stroke: var(--muted); stroke-width: 1.5; }
+.sw.up { background: var(--up); } .sw.down { background: var(--down); }
+.day-strip { list-style: none; display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; }
+.strip-day { flex: none; min-width: 128px; display: grid; gap: 2px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); }
+.strip-day.is-today { border-color: var(--live); }
+.strip-label { color: var(--muted); font-size: .85rem; }
+.strip-day strong { font-family: var(--display); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+
+/* shows, seats and editing */
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.sub-title { font-size: 1.1rem; margin-top: 8px; }
+.row-total { background: var(--surface2); font-weight: 700; }
+.row-total td, .row-total th { border-top: 2px solid var(--line); }
+.pill-edit { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: color-mix(in srgb, var(--live) 25%, transparent); color: var(--live); font-size: .72rem; font-weight: 700; vertical-align: middle; }
+.edit-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.edit-form { display: grid; gap: 14px; padding: 18px; border: 1px solid var(--live); border-radius: var(--radius-sm); background: var(--bg); }
+.edit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.edit-form fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px 14px; display: grid; gap: 10px; min-width: 0; }
+.edit-form legend { padding: 0 6px; font-weight: 700; }
+.field { display: grid; gap: 4px; font-size: .88rem; color: var(--muted); font-weight: 500; }
+.field input { padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); font-variant-numeric: tabular-nums; width: 100%; }
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.form-status { min-height: 1.4em; font-size: .9rem; }
+.form-status.err { color: var(--down); font-weight: 600; }
+.form-status.ok { color: var(--up); font-weight: 600; padding: 10px 14px; border: 1px solid var(--up); border-radius: 10px; }
+
+/* footer */
+.site-footer { border-top: 1px solid var(--line); background: var(--bg-deep); padding: 36px 0 24px; color: var(--muted); }
+.foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 28px; }
+.foot-grid strong { display: block; color: var(--text); margin-bottom: 8px; }
+.foot-brand { font-family: var(--display); font-size: 1.2rem; }
+.foot-grid a { display: block; padding: 3px 0; }
+.foot-grid a:hover { color: var(--text); }
+.copy { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .85rem; }
+
+/* responsive */
+@media (max-width: 1020px) {
+  .cols { grid-template-columns: 1fr; }
+  .col-side { position: static; }
+  .site-header nav a { padding: 8px 9px; font-size: .92rem; }
+}
+@media (max-width: 760px) {
+  .menu-btn { display: inline-grid; }
+  .site-header nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--bg-deep); border-bottom: 1px solid var(--line); display: none; }
+  .site-header nav:has(#menu.open) { display: block; }
+  .site-header nav ul { flex-direction: column; padding: 12px 16px; }
+  .bar { justify-content: space-between; }
+  .hero-slide { grid-template-columns: 1fr; min-height: 420px; }
+  .hero-art { order: 0; min-height: 150px; }
+  .live-row { grid-template-columns: auto 1fr; }
+  .live-amt { grid-column: 1 / -1; text-align: left; grid-template-columns: auto 1fr; align-items: baseline; gap: 4px 12px; }
+  .cmp-pick { grid-template-columns: 1fr; }
+  .foot-grid { grid-template-columns: 1fr; }
+  .poster-lg { width: 130px; height: 190px; }
+  .poster-name { font-size: 1.2rem; }
+  .defs { grid-template-columns: 1fr; gap: 2px; } .defs dd { margin-bottom: 10px; }
+  .up-card { grid-template-columns: auto 1fr; } .up-card .btn { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .dot-live { animation: none; }
+}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#app">Skip to content</a>
+<div class="ribbon" role="note"><strong>Sample site.</strong> All titles, figures and reports are illustrative placeholders, not real box-office data.</div>
+<header class="site-header">
+  <div class="shell bar">
+    <a href="#/" class="logo" aria-label="OliveReel home"><span class="logo-mark" aria-hidden="true">▶</span>OliveReel</a>
+    <nav aria-label="Main navigation">
+      <ul id="menu">
+        <li><a href="#/">Home</a></li>
+        <li><a href="#/live">Live</a></li>
+        <li><a href="#/box-office">Box office</a></li>
+        <li><a href="#/advance">Advance</a></li>
+        <li><a href="#/compare">Compare</a></li>
+        <li><a href="#/news">Reports</a></li>
+        <li><a href="#/about">How it works</a></li>
+      </ul>
+    </nav>
+    <div class="bar-tools">
+      <button class="icon-btn" id="searchBtn" type="button" aria-label="Search films" aria-expanded="false" aria-controls="searchPanel">⌕</button>
+      <button class="icon-btn" id="themeBtn" type="button" aria-pressed="false" aria-label="Switch to light theme">☀</button>
+      <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-controls="menu" aria-expanded="false">☰</button>
+    </div>
+  </div>
+  <div class="shell subnav" aria-label="Industries">
+    <a href="#/industry/bollywood">Bollywood</a>
+    <a href="#/industry/tollywood">Tollywood</a>
+    <a href="#/industry/kollywood">Kollywood</a>
+    <a href="#/industry/mollywood">Mollywood</a>
+    <a href="#/industry/sandalwood">Sandalwood</a>
+    <a href="#/industry/lollywood">Lollywood</a>
+  </div>
+  <div class="shell search-panel" id="searchPanel" hidden>
+    <label class="sr-only" for="searchInput">Search films</label>
+    <input id="searchInput" class="search" type="search" placeholder="Search a film, industry or language" autocomplete="off">
+    <ul id="searchResults" class="search-results" aria-live="polite"></ul>
+  </div>
+</header>
+<main class="shell" id="app" tabindex="-1"></main>
+<footer class="site-footer">
+  <div class="shell foot-grid">
+    <div><strong class="foot-brand">OliveReel</strong><p>Independent box office tracking for Indian and Pakistani cinema.</p></div>
+    <div><strong>Explore</strong><a href="#/live">Live</a><a href="#/box-office">Box office</a><a href="#/advance">Advance booking</a><a href="#/compare">Compare films</a></div>
+    <div><strong>About</strong><a href="#/about">How the numbers work</a><a href="#/news">Reports</a></div>
+  </div>
+  <div class="shell copy">© <span id="yr"></span> OliveReel. Sample data for design preview only.</div>
+</footer>
+<script>
+"use strict";
+/* ============================================================
+   OliveReel sample-data engine.
+   Every title, figure and report here is an illustrative
+   placeholder generated by code. Nothing is real box-office data.
+   Replace computeFilm() inputs with verified, cited figures.
+   ============================================================ */
+
+const MARKETS = {
+  india: { key: "india", name: "India", tz: "Asia/Kolkata", tzShort: "IST", cur: "₹", unit: "Cr", unitName: "crore", gst: 1.18, avgTicket: 170, seatsPerShow: 190, overseasLabel: "Overseas" },
+  pakistan: { key: "pakistan", name: "Pakistan", tz: "Asia/Karachi", tzShort: "PKT", cur: "Rs ", unit: "M", unitName: "million rupees", gst: 1, avgTicket: 900, seatsPerShow: 140, overseasLabel: "Overseas" }
+};
+
+const INDUSTRIES = [
+  { key: "bollywood", label: "Bollywood", lang: "Hindi", market: "india", hue: 28, about: "Hindi-language cinema, centred in Mumbai." },
+  { key: "tollywood", label: "Tollywood", lang: "Telugu", market: "india", hue: 350, about: "Telugu-language cinema from Hyderabad." },
+  { key: "kollywood", label: "Kollywood", lang: "Tamil", market: "india", hue: 215, about: "Tamil-language cinema from Chennai." },
+  { key: "mollywood", label: "Mollywood", lang: "Malayalam", market: "india", hue: 160, about: "Malayalam-language cinema from Kerala." },
+  { key: "sandalwood", label: "Sandalwood", lang: "Kannada", market: "india", hue: 45, about: "Kannada-language cinema from Bengaluru." },
+  { key: "lollywood", label: "Lollywood", lang: "Urdu and Punjabi", market: "pakistan", hue: 95, about: "Urdu and Punjabi cinema from Lahore and Karachi." }
+];
+const IND = Object.fromEntries(INDUSTRIES.map(i => [i.key, i]));
+
+/* rel = days since release (negative = releases in the future).
+   d1 = day-1 net in the market's unit (crore for India, million for Pakistan). */
+const FILM_DEFS = [
+  { id: "vajra-prabha", title: "Vajra Prabha", ind: "tollywood", langs: { Telugu: .46, Hindi: .26, Tamil: .13, Kannada: .08, Malayalam: .07 }, rel: 6, d1: 48, hold: .93, g: .15, budget: 400, ovr: .55, genre: "Action epic", cert: "UA", runtime: 172, screens: 6400, about: "A sample epic about a river-town guardian. Placeholder synopsis." },
+  { id: "saffron-road", title: "Saffron Road", ind: "bollywood", langs: { Hindi: 1 }, rel: 6, d1: 22.5, hold: .9, g: .1, budget: 160, ovr: .32, genre: "Road drama", cert: "UA", runtime: 148, screens: 4100, about: "A sample road drama across three cities. Placeholder synopsis." },
+  { id: "marina-mirror", title: "Marina Mirror", ind: "kollywood", langs: { Tamil: .72, Telugu: .28 }, rel: 5, d1: 15, hold: .9, g: .15, budget: 95, ovr: .38, genre: "Thriller", cert: "UA", runtime: 139, screens: 2600, about: "A sample thriller set on a Chennai beachfront. Placeholder synopsis." },
+  { id: "midnight-mela", title: "Midnight Mela", ind: "bollywood", langs: { Hindi: 1 }, rel: 13, d1: 9.5, hold: .82, g: .05, budget: 70, ovr: .22, genre: "Comedy", cert: "U", runtime: 131, screens: 3200, about: "A sample fairground comedy. Placeholder synopsis." },
+  { id: "kayal-nilavu", title: "Kayal Nilavu", ind: "mollywood", langs: { Malayalam: 1 }, rel: 11, d1: 3.4, hold: .9, g: .2, budget: 20, ovr: .45, genre: "Drama", cert: "UA", runtime: 126, screens: 540, about: "A sample backwater family drama. Placeholder synopsis." },
+  { id: "malnad-moon", title: "Malnad Moon", ind: "sandalwood", langs: { Kannada: 1 }, rel: 19, d1: 4.6, hold: .87, g: .12, budget: 30, ovr: .12, genre: "Mystery", cert: "UA", runtime: 134, screens: 620, about: "A sample hill-country mystery. Placeholder synopsis." },
+  { id: "teen-din-ki-shaadi", title: "Teen Din Ki Shaadi", ind: "bollywood", langs: { Hindi: 1 }, rel: 20, d1: 6, hold: .78, g: 0, budget: 55, ovr: .2, genre: "Romance", cert: "U", runtime: 127, screens: 2400, about: "A sample wedding romance. Placeholder synopsis." },
+  { id: "hill-station-47", title: "Hill Station 47", ind: "mollywood", langs: { Malayalam: 1 }, rel: 26, d1: 2.1, hold: .88, g: .1, budget: 14, ovr: .4, genre: "Horror", cert: "A", runtime: 118, screens: 420, about: "A sample hill-station horror. Placeholder synopsis." },
+  { id: "godavari-gang", title: "Godavari Gang", ind: "tollywood", langs: { Telugu: 1 }, rel: 27, d1: 17, hold: .85, g: .08, budget: 110, ovr: .3, genre: "Crime", cert: "UA", runtime: 151, screens: 2900, about: "A sample crime saga on the Godavari delta. Placeholder synopsis." },
+  { id: "kaagaz-ka-sheher", title: "Kaagaz Ka Sheher", ind: "bollywood", langs: { Hindi: 1 }, rel: 34, d1: 3.2, hold: .7, g: -.05, budget: 80, ovr: .1, genre: "Drama", cert: "UA", runtime: 142, screens: 1800, about: "A sample bureaucracy drama. Placeholder synopsis." },
+  { id: "kaveri-kaalam", title: "Kaveri Kaalam", ind: "kollywood", langs: { Tamil: 1 }, rel: 40, d1: 8, hold: .84, g: .05, budget: 60, ovr: .28, genre: "Family", cert: "U", runtime: 145, screens: 1500, about: "A sample family film along the Kaveri. Placeholder synopsis." },
+  { id: "dilli-heist", title: "Dilli Heist", ind: "bollywood", langs: { Hindi: 1 }, rel: 48, d1: 14, hold: .88, g: .12, budget: 90, ovr: .26, genre: "Heist", cert: "UA", runtime: 138, screens: 3500, about: "A sample heist film in old Delhi. Placeholder synopsis." },
+
+  { id: "karachi-kahani", title: "Karachi Kahani", ind: "lollywood", langs: { Urdu: 1 }, rel: 4, d1: 26, hold: .9, g: .1, budget: 300, ovr: .18, genre: "Drama", cert: "U", runtime: 136, screens: 210, about: "A sample city drama. Placeholder synopsis." },
+  { id: "lahore-ki-raat", title: "Lahore Ki Raat", ind: "lollywood", langs: { Urdu: 1 }, rel: 8, d1: 38, hold: .88, g: .12, budget: 350, ovr: .2, genre: "Thriller", cert: "UA", runtime: 141, screens: 230, about: "A sample night-city thriller. Placeholder synopsis." },
+  { id: "sheesha-mahal", title: "Sheesha Mahal", ind: "lollywood", langs: { Urdu: .55, Punjabi: .45 }, rel: 15, d1: 22, hold: .84, g: .05, budget: 260, ovr: .16, genre: "Romance", cert: "U", runtime: 128, screens: 190, about: "A sample palace romance. Placeholder synopsis." },
+  { id: "mehran-express", title: "Mehran Express", ind: "lollywood", langs: { Urdu: 1 }, rel: 24, d1: 12, hold: .8, g: .02, budget: 180, ovr: .12, genre: "Adventure", cert: "U", runtime: 122, screens: 160, about: "A sample train adventure. Placeholder synopsis." },
+  { id: "chacha-jee-zindabad", title: "Chacha Jee Zindabad", ind: "lollywood", langs: { Punjabi: 1 }, rel: 31, d1: 8, hold: .78, g: 0, budget: 120, ovr: .1, genre: "Comedy", cert: "U", runtime: 124, screens: 140, about: "A sample village comedy. Placeholder synopsis." },
+
+  { id: "neon-nawab", title: "Neon Nawab", ind: "bollywood", langs: { Hindi: 1 }, thu: true, rel: -4, d1: 18, hold: .85, g: .05, budget: 120, ovr: .3, genre: "Musical", cert: "UA", runtime: 146, screens: 3800, about: "A sample musical. Placeholder synopsis." },
+  { id: "kuthira-veeran", title: "Kuthira Veeran", ind: "kollywood", langs: { Tamil: 1 }, thu: true, rel: -3, d1: 11, hold: .85, g: .05, budget: 85, ovr: .3, genre: "Period action", cert: "UA", runtime: 156, screens: 2100, about: "A sample period action film. Placeholder synopsis." },
+  { id: "nargis-express", title: "Nargis Express", ind: "lollywood", langs: { Urdu: 1 }, rel: -7, d1: 20, hold: .85, g: .05, budget: 230, ovr: .18, genre: "Romance", cert: "U", runtime: 130, screens: 200, about: "A sample railway romance. Placeholder synopsis." },
+  { id: "sahyadri", title: "Sahyadri", ind: "tollywood", langs: { Telugu: .8, Hindi: .2 }, rel: -12, d1: 26, hold: .88, g: .08, budget: 180, ovr: .4, genre: "Adventure", cert: "UA", runtime: 160, screens: 3000, about: "A sample mountain adventure. Placeholder synopsis." }
+];
+
+const YEARLY = {
+  india: { labels: ["2022", "2023", "2024", "2025", "2026"], values: [9800, 12000, 11500, 13200, 14100] },
+  pakistan: { labels: ["2022", "2023", "2024", "2025", "2026"], values: [3100, 4200, 5600, 6800, 7400] }
+};
+
+const REGION_W = {
+  Hindi: { "Mumbai": 17, "Delhi NCR": 15, "Bengaluru": 7, "Hyderabad": 5, "Chennai": 4, "Kolkata": 7, "Pune": 6, "Rest of India": 39 },
+  Telugu: { "Hyderabad": 34, "Bengaluru": 10, "Chennai": 6, "Mumbai": 4, "Delhi NCR": 3, "Vijayawada": 12, "Vizag": 9, "Rest of India": 22 },
+  Tamil: { "Chennai": 30, "Bengaluru": 10, "Coimbatore": 11, "Madurai": 8, "Hyderabad": 5, "Mumbai": 4, "Kochi": 4, "Rest of India": 28 },
+  Malayalam: { "Kochi": 24, "Thiruvananthapuram": 17, "Kozhikode": 13, "Bengaluru": 9, "Chennai": 6, "Mumbai": 4, "Thrissur": 8, "Rest of India": 19 },
+  Kannada: { "Bengaluru": 46, "Mysuru": 10, "Mangaluru": 8, "Hubballi": 6, "Hyderabad": 3, "Mumbai": 3, "Chennai": 2, "Rest of India": 22 },
+  Urdu: { "Karachi": 38, "Lahore": 32, "Islamabad and Rawalpindi": 14, "Faisalabad": 5, "Multan": 3, "Peshawar": 3, "Others": 5 },
+  Punjabi: { "Lahore": 36, "Karachi": 14, "Faisalabad": 14, "Gujranwala": 10, "Islamabad and Rawalpindi": 12, "Multan": 6, "Others": 8 }
+};
+
+const NEWS_DEFS = [
+  { tag: "India", title: "Sample report: Weekend collections cross a new milestone", text: "Placeholder summary. Replace with a short report and a link to the full story.", ago: 3 },
+  { tag: "Pakistan", title: "Sample report: Local release leads the weekend in Karachi and Lahore", text: "Placeholder summary. Replace with verified figures and a source.", ago: 4 },
+  { tag: "Analysis", title: "Sample analysis: Why regional films are gaining share", text: "Placeholder summary. Add an analysis with your own reporting.", ago: 5 },
+  { tag: "Advance booking", title: "Sample report: Advance bookings open for the festive release", text: "Placeholder summary. Replace with verified booking information.", ago: 6 },
+  { tag: "Pakistan", title: "Sample report: New cinema screens open in major cities", text: "Placeholder summary. Add verified distribution details.", ago: 7 },
+  { tag: "India", title: "Sample report: Second-week hold decides the verdict", text: "Placeholder summary. Replace with week-two figures from a cited source.", ago: 8 },
+  { tag: "Analysis", title: "Sample analysis: Yearly box office compared with last year", text: "Placeholder summary. Use data from verified sources.", ago: 9 },
+  { tag: "Advance booking", title: "Sample report: Night shows lead early bookings", text: "Placeholder summary. Replace with verified occupancy data.", ago: 10 },
+  { tag: "India", title: "Sample report: Dubbed versions add to the pan-India total", text: "Placeholder summary. Replace with language-wise figures.", ago: 12 }
+];
+
+/* ---------- helpers ---------- */
+function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function hashStr(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+const r2 = n => Math.round(n * 100) / 100;
+const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+function startOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+const TODAY0 = startOfDay(new Date());
+const DOW = [1.65, .62, .6, .58, .64, 1.0, 1.45]; /* Sun..Sat */
+const dowF = d => DOW[d.getDay()];
+
+/* Fraction of today's collection that is "in" at this moment (market local time). */
+/* Show shifts. showW = share of the day's shows, soldW = share of the day's tickets. */
+const SHIFT_DEF = [
+  { key: "Morning", time: "9 AM to 12 PM", start: 9, end: 12, showW: .20, soldW: .14 },
+  { key: "Matinee", time: "12 PM to 4 PM", start: 12, end: 16, showW: .25, soldW: .24 },
+  { key: "Evening", time: "4 PM to 8 PM", start: 16, end: 20, showW: .27, soldW: .30 },
+  { key: "Night", time: "8 PM to midnight", start: 20, end: 24, showW: .28, soldW: .32 }
+];
+
+/* Numbers typed in by the site owner. Saved in this browser only (localStorage). */
+const EDITS_KEY = "olivereel-edits-v1";
+let EDITS = (() => { try { return JSON.parse(localStorage.getItem(EDITS_KEY) || "{}") || {}; } catch (e) { return {}; } })();
+function saveEdits() { try { localStorage.setItem(EDITS_KEY, JSON.stringify(EDITS)); return true; } catch (e) { return false; } }
+
+function hourFloat(tz, now = new Date()) {
+  const p = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(now);
+  return (Number(p.find(x => x.type === "hour").value) % 24) + Number(p.find(x => x.type === "minute").value) / 60;
+}
+function shiftStatus(tz, s, now = new Date()) {
+  const t = hourFloat(tz, now);
+  if (t >= s.end) return { status: "Completed", prog: 1 };
+  if (t >= s.start) return { status: "Running", prog: (t - s.start) / (s.end - s.start) };
+  return { status: "Not started", prog: 0 };
+}
+
+function liveFrac(tz, now = new Date()) {
+  const t = hourFloat(tz, now);
+  if (t < 9) return .01;
+  if (t < 12) return .01 + (t - 9) / 3 * .15;
+  if (t < 16) return .16 + (t - 12) / 4 * .30;
+  if (t < 20) return .46 + (t - 16) / 4 * .28;
+  return .74 + (t - 20) / 4 * .26;
+}
+function localTimeLabel(tz, now = new Date()) {
+  return new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "numeric", minute: "2-digit", hour12: true }).format(now).toUpperCase();
+}
+
+function projectDay(f, base, i, date, rnd) {
+  const noise = rnd ? .95 + rnd() * .1 : 1;
+  /* decay flattens into a long tail instead of reaching zero */
+  return Math.max(r2(base * dowF(date) * Math.pow(f.hold, Math.min(i, 16) * .55) * (1 + f.g * Math.min(i, 3) * .35) * noise), .02);
+}
+
+/* ---------- per-film computed model ---------- */
+/* Shows, seats and tickets for one day, split into the four shifts. */
+function buildShows(m, net, occAvg, edit, isToday) {
+  const unitPerTicket = m.key === "india" ? 1e7 / m.avgTicket : 1e6 / m.avgTicket;
+  const tickets = net * unitPerTicket, seatsTot = tickets / (occAvg / 100), showsTot = seatsTot / m.seatsPerShow;
+  const shifts = {}, total = { shows: 0, seats: 0, sold: 0 };
+  SHIFT_DEF.forEach(sd => {
+    const shows = Math.max(1, Math.round(showsTot * sd.showW)), seats = shows * m.seatsPerShow;
+    const o = { shows, seats, sold: Math.min(Math.round(tickets * sd.soldW), Math.round(seats * .98)), edited: false };
+    const e = edit && edit.shifts && edit.shifts[sd.key];
+    if (e) { ["shows", "seats", "sold"].forEach(k => { if (Number.isFinite(e[k]) && e[k] >= 0) o[k] = Math.round(e[k]); }); o.edited = true; }
+    o.occ = o.seats > 0 ? Math.min(100, o.sold / o.seats * 100) : 0;
+    shifts[sd.key] = o; total.shows += o.shows; total.seats += o.seats; total.sold += o.sold;
+  });
+  total.occ = total.seats > 0 ? Math.min(100, total.sold / total.seats * 100) : 0;
+  return { shifts, total };
+}
+/* Advance sold for a future day: spread the advance tickets over the shifts. */
+function advanceShifts(m, est, occAvg, advTickets) {
+  const full = buildShows(m, est, occAvg, null, false), shifts = {}, total = { shows: 0, seats: 0, sold: 0 };
+  SHIFT_DEF.forEach(sd => {
+    const f = full.shifts[sd.key], sold = Math.min(Math.round(advTickets * sd.soldW), f.seats);
+    shifts[sd.key] = { shows: f.shows, seats: f.seats, sold, occ: f.seats ? sold / f.seats * 100 : 0 };
+    total.shows += f.shows; total.seats += f.seats; total.sold += sold;
+  });
+  total.occ = total.seats ? total.sold / total.seats * 100 : 0;
+  return { shifts, total };
+}
+
+/* Films open on Fridays. Snap the sample release date to the nearest Friday so day-of-week patterns look real. */
+function snapRelease(daysAgo, weekday = 5) {
+  const target = addDays(TODAY0, -daysAgo);
+  let best = target, gap = 99;
+  for (let k = -3; k <= 3; k++) { const d = addDays(target, k); if (d.getDay() === weekday && Math.abs(k) < gap) { best = d; gap = Math.abs(k); } }
+  return best;
+}
+function computeFilm(f) {
+  const ind = IND[f.ind], m = MARKETS[ind.market], rnd = mulberry(hashStr(f.id));
+  const rel = snapRelease(f.rel, f.thu ? 4 : 5), age = Math.round((TODAY0 - rel) / 864e5);
+  const out = { f, ind, m, rel, hue: (ind.hue + (hashStr(f.id) % 40) - 20 + 360) % 360, upcoming: age < 0, age };
+  const regs = REGION_W[Object.keys(f.langs).sort((a, b) => f.langs[b] - f.langs[a])[0]] || REGION_W.Hindi;
+  const rsum = Object.values(regs).reduce((s, v) => s + v, 0);
+  out.regions = Object.entries(regs).map(([name, w]) => ({ name, share: w / rsum }));
+  const unitPerTicket = m.key === "india" ? 1e7 / m.avgTicket : 1e6 / m.avgTicket;
+
+  if (out.upcoming) {
+    out.daysToRelease = -age;
+    const open = age >= -4 ? (5 + age) / 5 : 0;
+    const adv = r2(f.d1 * (.18 + rnd() * .22) * open);
+    const tix = Math.round(adv * unitPerTicket), sh = advanceShifts(m, f.d1, 55, tix);
+    out.advance = [{ i: 0, date: rel, est: f.d1, advance: adv, tickets: tix, shows: sh.total.shows, seats: sh.total.seats, shifts: sh.shifts, total: sh.total }];
+    out.total = 0; out.days = []; out.cum = [];
+    return out;
+  }
+
+  const base = f.d1 / dowF(rel);
+  const days = [];
+  for (let i = 0; i <= age; i++) {
+    const date = addDays(rel, i);
+    days.push({ i, date, v: i === 0 ? f.d1 : projectDay(f, base, i, date, rnd) });
+  }
+  const ed = EDITS[f.id] || {};
+  days.forEach(d => { const e = ed[d.i]; if (e && Number.isFinite(e.net) && e.net >= 0) { d.v = r2(e.net); d.edited = true; } });
+  const frac = liveFrac(m.tz);
+  const today = days[days.length - 1];
+  today.proj = today.v; today.live = r2(today.v * frac); today.isToday = true;
+  out.frac = frac; out.today = today;
+  out.yesterday = days.length > 1 ? days[days.length - 2] : null;
+  out.change = out.yesterday ? (today.proj - out.yesterday.v) / out.yesterday.v * 100 : null;
+  out.days = days;
+
+  let c = 0; out.cum = days.map(d => { c += d.isToday ? d.live : d.v; return r2(c); });
+  out.total = out.cum[out.cum.length - 1];
+  out.totalFinal = r2(days.reduce((s, d) => s + (d.isToday ? d.proj : d.v), 0));
+
+  /* advance booking for the next three days */
+  out.advance = [1, 2, 3].map(j => {
+    const i = age + j, date = addDays(rel, i);
+    const est = projectDay(f, base, i, date, null);
+    const share = [.34, .2, .11][j - 1] * (.85 + rnd() * .3);
+    const adv = r2(est * share);
+    return { i, date, est, advance: adv, tickets: Math.round(adv * unitPerTicket), shows: Math.round(f.screens * (1.5 - j * .08)) };
+  });
+
+  /* shows, seats and occupancy by day and by shift */
+  const maxV = Math.max(...days.map(d => d.isToday ? d.proj : d.v), .01);
+  const occFor = v => clamp(Math.round(18 + 52 * Math.sqrt(v / maxV)), 12, 92);
+  out.shows = []; out.occ = [];
+  days.forEach(d => {
+    const v = d.isToday ? d.proj : d.v, o0 = clamp(occFor(v) + Math.round(rnd() * 4), 12, 92);
+    const sh = buildShows(m, v, o0, ed[d.i] || null, !!d.isToday);
+    out.shows.push({ i: d.i, date: d.date, shifts: sh.shifts, total: sh.total });
+    out.occ.push({ i: d.i, date: d.date, avg: Math.round(sh.total.occ), shifts: Object.fromEntries(SHIFT_DEF.map(sd => [sd.key, Math.round(sh.shifts[sd.key].occ)])) });
+  });
+  /* today: what has actually been sold so far, by shift status */
+  out.liveShows = {}; out.soldNow = 0;
+  const tdy = out.shows[out.shows.length - 1];
+  SHIFT_DEF.forEach(sd => {
+    const x = tdy.shifts[sd.key], st = shiftStatus(m.tz, sd);
+    const now = x.edited ? x.sold : st.status === "Completed" ? x.sold : st.status === "Running" ? Math.round(x.sold * (.3 + .7 * st.prog)) : Math.round(x.sold * .3);
+    out.liveShows[sd.key] = { ...st, soldNow: now };
+    out.soldNow += now;
+  });
+  /* advance days also get shows and seats by shift */
+  out.advance.forEach(a => { const sh = advanceShifts(m, a.est, occFor(a.est), a.tickets); a.shows = sh.total.shows; a.seats = sh.total.seats; a.shifts = sh.shifts; a.total = sh.total; });
+
+  /* language split */
+  out.langRows = Object.entries(f.langs).map(([lang, share]) => ({ lang, share, total: r2(out.total * share), today: r2(today.live * share), todayProj: r2(today.proj * share) }));
+
+  /* worldwide */
+  const gross = r2(out.total * m.gst), overseas = r2(gross * f.ovr);
+  out.ww = { net: out.total, gross, overseas, worldwide: r2(gross + overseas) };
+
+  /* budget recovery and verdict */
+  out.recovery = out.total / f.budget * 100;
+  out.verdict = age < 7 ? "Too early" : out.recovery >= 250 ? "Blockbuster" : out.recovery >= 150 ? "Super hit" : out.recovery >= 100 ? "Hit" : out.recovery >= 80 ? "Average" : out.recovery >= 50 ? "Below average" : "Flop";
+
+  /* week summary */
+  out.weeks = [];
+  for (let w = 0; w * 7 < days.length; w++) {
+    const part = days.slice(w * 7, w * 7 + 7);
+    out.weeks.push({ week: w + 1, days: part.length, net: r2(part.reduce((s, d) => s + (d.isToday ? d.live : d.v), 0)) });
+  }
+  return out;
+}
+
+const FILMS = FILM_DEFS.map(computeFilm);
+const FILM_BY_ID = Object.fromEntries(FILMS.map(f => [f.f.id, f]));
+const RUNNING = FILMS.filter(f => !f.upcoming && f.age <= 13).sort((a, b) => b.today.proj - a.today.proj);
+const EXTENDED = FILMS.filter(f => !f.upcoming && f.age > 13).sort((a, b) => b.today.proj - a.today.proj);
+const UPCOMING = FILMS.filter(f => f.upcoming).sort((a, b) => a.age - b.age).reverse();
+const NEWS = NEWS_DEFS.map(n => ({ ...n, date: addDays(TODAY0, -n.ago) }));
+
+"use strict";
+/* ============================================================
+   UI helpers: DOM builders, formatters, SVG charts.
+   All text goes in through textContent / text nodes (no innerHTML).
+   ============================================================ */
+
+const SVGNS = "http://www.w3.org/2000/svg";
+function h(tag, props, ...kids) {
+  const n = document.createElement(tag);
+  applyProps(n, props);
+  appendKids(n, kids);
+  return n;
+}
+function sv(tag, props, ...kids) {
+  const n = document.createElementNS(SVGNS, tag);
+  applyProps(n, props);
+  appendKids(n, kids);
+  return n;
+}
+function applyProps(n, props) {
+  if (!props) return;
+  for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === "class") n.setAttribute("class", v);
+    else if (k === "style" && typeof v === "object") Object.entries(v).forEach(([a, b]) => n.style.setProperty(a, b));
+    else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? "" : String(v));
+  }
+}
+function appendKids(n, kids) {
+  for (const kid of kids.flat(Infinity)) {
+    if (kid == null || kid === false) continue;
+    n.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
+}
+const $ = (q, r = document) => r.querySelector(q);
+const $$ = (q, r = document) => Array.from(r.querySelectorAll(q));
+
+/* ---------- formatters ---------- */
+const nfIN = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
+const nf2 = new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function money(m, v) {
+  if (m.key === "india") return v < 1 ? `₹${Math.round(v * 100)} L` : `₹${nf2.format(v)} Cr`;
+  return v < 1 ? `Rs ${Math.round(v * 1000)} K` : `Rs ${nf2.format(v)} M`;
+}
+function moneyShort(m, v) { return m.key === "india" ? `${nfIN.format(v)}` : `${nfIN.format(v)}`; }
+const dFmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
+const dShort = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
+const dWeek = new Intl.DateTimeFormat("en-GB", { weekday: "short" });
+const fmtDate = d => dFmt.format(d), fmtShort = d => dShort.format(d), fmtWeekday = d => dWeek.format(d);
+const pct = n => `${n > 0 ? "+" : ""}${n.toFixed(1)}%`;
+function trend(n) {
+  if (n == null || !isFinite(n)) return h("span", { class: "trend flat" }, "–");
+  const up = n > .05, down = n < -.05;
+  const el = h("span", { class: `trend ${up ? "up" : down ? "down" : "flat"}` }, `${up ? "▲" : down ? "▼" : "▬"} ${Math.abs(n).toFixed(1)}%`);
+  el.setAttribute("aria-label", `${up ? "Up" : down ? "Down" : "Unchanged"} ${Math.abs(n).toFixed(1)} percent`);
+  return el;
+}
+function dayLabel(film) {
+  const day = film.age + 1;
+  return film.age < 7 ? `Release week · Day ${day}` : `Week ${Math.floor(film.age / 7) + 1} · Day ${day}`;
+}
+function verdictClass(v) {
+  return v === "Too early" ? "v-early" : /Blockbuster|Super hit|^Hit$/.test(v) ? "v-hit" : v === "Average" ? "v-avg" : "v-flop";
+}
+const verdictBadge = film => h("span", { class: `badge ${verdictClass(film.verdict)}` }, film.verdict);
+
+/* ---------- small components ---------- */
+function poster(film, size = "sm") {
+  const initials = film.f.title.split(/\s+/).slice(0, 2).map(w => w[0]).join("");
+  return h("div", { class: `poster poster-${size}`, style: { "--h": film.hue }, "aria-hidden": "true" },
+    size === "lg" ? h("span", { class: "poster-name" }, film.f.title) : h("span", { class: "poster-ini" }, initials));
+}
+function filmLink(film, tab, cls = "film-link") {
+  return h("a", { class: cls, href: `#/film/${film.f.id}${tab ? "/" + tab : ""}` }, film.f.title);
+}
+function chip(label, href) { return h("a", { class: "chip", href }, label); }
+function tabs(items, active, onPick, label) {
+  const wrap = h("div", { class: "tabs", role: "group", "aria-label": label });
+  items.forEach(([key, text]) => {
+    wrap.append(h("button", { type: "button", class: "tab", "aria-pressed": String(key === active), "data-k": key, onclick: () => onPick(key) }, text));
+  });
+  return wrap;
+}
+function setPressed(wrap, key) { $$("button", wrap).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k === key))); }
+function panel(title, ...body) { return h("section", { class: "panel" }, title ? h("h2", { class: "panel-title" }, title) : null, ...body); }
+function statCard(label, value, sub, cls = "") {
+  return h("div", { class: `stat ${cls}` }, h("span", { class: "stat-label" }, label), h("strong", { class: "stat-value" }, value), sub ? h("span", { class: "stat-sub" }, sub) : null);
+}
+function empty(text) { return h("p", { class: "empty" }, text); }
+function sampleBadge() { return h("span", { class: "sample-pill", title: "Illustrative placeholder data" }, "Sample"); }
+
+/* ---------- follow list (per-viewer convenience) ---------- */
+const FOLLOW_KEY = "olivereel-follow";
+function getFollow() { try { return new Set(JSON.parse(localStorage.getItem(FOLLOW_KEY) || "[]")); } catch (e) { return new Set(); } }
+function setFollow(set) { try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...set])); } catch (e) { /* storage blocked */ } }
+function followButton(id) {
+  const memory = getFollow();
+  const btn = h("button", { type: "button", class: "btn btn-small", "aria-pressed": String(memory.has(id)) });
+  const paint = on => { btn.textContent = on ? "Following" : "Follow"; btn.setAttribute("aria-pressed", String(on)); };
+  paint(memory.has(id));
+  btn.addEventListener("click", () => { const s = getFollow(); s.has(id) ? s.delete(id) : s.add(id); setFollow(s); paint(s.has(id)); });
+  return btn;
+}
+
+/* ---------- SVG charts ---------- */
+function niceMax(v) {
+  if (!(v > 0)) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p;
+  return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+}
+function axisFmt(v) { return v >= 100 ? nfIN.format(Math.round(v)) : v >= 10 ? String(Math.round(v * 10) / 10) : String(Math.round(v * 100) / 100); }
+
+/* bars: [{label, value, kind: "done"|"live"|"fc", tip}] */
+function barChart({ bars, unit, title, desc, height = 260 }) {
+  const W = 640, H = height, L = 48, R = 10, T = 26, B = 34;
+  const pw = W - L - R, ph = H - T - B;
+  const max = niceMax(Math.max(...bars.map(b => b.value), .01));
+  const svg = sv("svg", { class: "chart", viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": title }, sv("title", null, title), sv("desc", null, desc || title));
+  for (let i = 0; i <= 4; i++) {
+    const y = T + ph - ph * i / 4;
+    svg.append(sv("line", { class: "grid", x1: L, x2: W - R, y1: y, y2: y }), sv("text", { class: "axis", x: L - 8, y: y + 4, "text-anchor": "end" }, axisFmt(max * i / 4)));
+  }
+  if (unit) svg.append(sv("text", { class: "axis-unit", x: L, y: 10 }, unit));
+  const slot = pw / bars.length, bw = Math.min(46, slot * .66), every = Math.ceil(bars.length / 14);
+  bars.forEach((b, i) => {
+    const bh = Math.max(1.5, ph * b.value / max), x = L + slot * i + (slot - bw) / 2, y = T + ph - bh;
+    const bar = sv("rect", { class: `bar ${b.kind || "done"}`, x, y, width: bw, height: bh, rx: Math.min(5, bw / 4) }, sv("title", null, b.tip || `${b.label}: ${b.value}`));
+    svg.append(bar);
+    if (i % every === 0) svg.append(sv("text", { class: "axis", x: x + bw / 2, y: H - 12, "text-anchor": "middle" }, b.label));
+    if (bars.length <= 9) svg.append(sv("text", { class: "bar-val", x: x + bw / 2, y: y - 5, "text-anchor": "middle" }, axisFmt(b.value)));
+  });
+  return svg;
+}
+
+/* line chart: series [{name, values, cls}], labels [] */
+function lineChart({ labels, series, unit, title, desc, height = 260 }) {
+  const W = 640, H = height, L = 52, R = 14, T = 26, B = 34;
+  const pw = W - L - R, ph = H - T - B;
+  const max = niceMax(Math.max(...series.flatMap(s => s.values), .01));
+  const svg = sv("svg", { class: "chart", viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": title }, sv("title", null, title), sv("desc", null, desc || title));
+  for (let i = 0; i <= 4; i++) {
+    const y = T + ph - ph * i / 4;
+    svg.append(sv("line", { class: "grid", x1: L, x2: W - R, y1: y, y2: y }), sv("text", { class: "axis", x: L - 8, y: y + 4, "text-anchor": "end" }, axisFmt(max * i / 4)));
+  }
+  if (unit) svg.append(sv("text", { class: "axis-unit", x: L, y: 10 }, unit));
+  const n = labels.length, xAt = i => L + (n === 1 ? pw / 2 : pw * i / (n - 1)), yAt = v => T + ph - ph * v / max, every = Math.ceil(n / 12);
+  labels.forEach((lb, i) => { if (i % every === 0) svg.append(sv("text", { class: "axis", x: xAt(i), y: H - 12, "text-anchor": "middle" }, lb)); });
+  series.forEach(s => {
+    const pts = s.values.map((v, i) => [xAt(i), yAt(v)]);
+    if (s.area) svg.append(sv("path", { class: `area ${s.cls}`, d: `M${pts[0][0]},${T + ph} ` + pts.map(p => `L${p[0]},${p[1]}`).join(" ") + ` L${pts[pts.length - 1][0]},${T + ph} Z` }));
+    svg.append(sv("path", { class: `line ${s.cls}`, d: pts.map((p, i) => `${i ? "L" : "M"}${p[0]},${p[1]}`).join(" ") }));
+    if (n <= 14) pts.forEach((p, i) => svg.append(sv("circle", { class: `dot ${s.cls}`, cx: p[0], cy: p[1], r: 3.5 }, sv("title", null, `${s.name}, ${labels[i]}: ${axisFmt(s.values[i])}`))));
+  });
+  return svg;
+}
+
+function sparkline(values, cls = "") {
+  const W = 84, H = 26, max = Math.max(...values, .01), min = Math.min(...values, 0);
+  const pts = values.map((v, i) => [values.length === 1 ? W / 2 : 2 + (W - 4) * i / (values.length - 1), H - 3 - (H - 6) * (v - min) / (max - min || 1)]);
+  return sv("svg", { class: `spark ${cls}`, viewBox: `0 0 ${W} ${H}`, "aria-hidden": "true" }, sv("path", { d: pts.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ") }));
+}
+
+function meter(valuePct, label) {
+  const v = clamp(valuePct, 0, 300);
+  const m = h("div", { class: "meter", role: "img", "aria-label": `${label}: ${Math.round(valuePct)} percent of budget recovered` },
+    h("div", { class: "meter-fill", style: { width: `${v / 3}%` } }),
+    h("span", { class: "meter-mark", style: { left: `${100 / 3}%` }, title: "Budget recovered" }));
+  return m;
+}
+
+/* Trend line: every segment is green when the day went up and red when it came down. */
+function trendChart({ points, unit, title, desc, height = 290 }) {
+  const W = 640, H = height, L = 52, R = 18, T = 34, B = 34, pw = W - L - R, ph = H - T - B;
+  const max = niceMax(Math.max(...points.map(p => p.value), .01)), n = points.length;
+  const xAt = i => L + (n === 1 ? pw / 2 : pw * i / (n - 1)), yAt = v => T + ph - ph * v / max, every = Math.ceil(n / 14);
+  const svg = sv("svg", { class: "chart", viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": title }, sv("title", null, title), sv("desc", null, desc || title));
+  for (let i = 0; i <= 4; i++) {
+    const y = T + ph - ph * i / 4;
+    svg.append(sv("line", { class: "grid", x1: L, x2: W - R, y1: y, y2: y }), sv("text", { class: "axis", x: L - 8, y: y + 4, "text-anchor": "end" }, axisFmt(max * i / 4)));
+  }
+  if (unit) svg.append(sv("text", { class: "axis-unit", x: L, y: 12 }, unit));
+  if (n > 1) svg.append(sv("path", { class: "area line-a", d: `M${xAt(0)},${T + ph} ` + points.map((p, i) => `L${xAt(i)},${yAt(p.value)}`).join(" ") + ` L${xAt(n - 1)},${T + ph} Z` }));
+  for (let i = 1; i < n; i++) {
+    const up = points[i].value >= points[i - 1].value;
+    svg.append(sv("line", { class: `seg ${up ? "up" : "down"}`, x1: xAt(i - 1), y1: yAt(points[i - 1].value), x2: xAt(i), y2: yAt(points[i].value) }));
+  }
+  points.forEach((p, i) => {
+    const cls = i === 0 ? "first" : p.value >= points[i - 1].value ? "up" : "down";
+    svg.append(sv("circle", { class: `pt ${cls}`, cx: xAt(i), cy: yAt(p.value), r: n > 24 ? 3 : 5 }, sv("title", null, p.tip || `${p.label}: ${axisFmt(p.value)}`)));
+    if (i % every === 0) {
+      svg.append(sv("text", { class: "axis", x: xAt(i), y: H - 12, "text-anchor": "middle" }, p.label));
+      if (n <= 16) svg.append(sv("text", { class: `pt-val ${cls}`, x: xAt(i), y: yAt(p.value) - 11, "text-anchor": "middle" }, axisFmt(p.value)));
+    }
+  });
+  return svg;
+}
+
+/* Bars above the zero line (green) are a rise from the previous day, bars below (red) are a fall. */
+function deltaChart({ items, title, desc, height = 250 }) {
+  const W = 640, H = height, L = 52, R = 14, T = 20, B = 34, pw = W - L - R, ph = H - T - B, n = items.length;
+  const max = niceMax(Math.max(...items.map(i => Math.abs(i.value)), 1)), mid = T + ph / 2, half = ph / 2;
+  const svg = sv("svg", { class: "chart", viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": title }, sv("title", null, title), sv("desc", null, desc || title));
+  [-1, -.5, 0, .5, 1].forEach(f => {
+    const y = mid - half * f;
+    svg.append(sv("line", { class: f === 0 ? "zero" : "grid", x1: L, x2: W - R, y1: y, y2: y }), sv("text", { class: "axis", x: L - 8, y: y + 4, "text-anchor": "end" }, `${f > 0 ? "+" : ""}${axisFmt(max * f)}%`));
+  });
+  const slot = pw / Math.max(n, 1), bw = Math.min(40, slot * .64), every = Math.ceil(n / 14);
+  items.forEach((it, i) => {
+    const hgt = Math.max(1.5, half * Math.abs(it.value) / max), x = L + slot * i + (slot - bw) / 2, up = it.value >= 0, y = up ? mid - hgt : mid;
+    svg.append(sv("rect", { class: `dbar ${up ? "up" : "down"}`, x, y, width: bw, height: hgt, rx: 3 }, sv("title", null, it.tip || `${it.label}: ${it.value.toFixed(1)}%`)));
+    if (i % every === 0) {
+      svg.append(sv("text", { class: "axis", x: x + bw / 2, y: H - 12, "text-anchor": "middle" }, it.label));
+      if (n <= 14) svg.append(sv("text", { class: `pt-val ${up ? "up" : "down"}`, x: x + bw / 2, y: up ? y - 5 : y + hgt + 12, "text-anchor": "middle" }, `${up ? "+" : ""}${it.value.toFixed(0)}%`));
+    }
+  });
+  return svg;
+}
+
+"use strict";
+/* ============================================================
+   Views. Each returns {title, node} and is mounted by the router.
+   Live numbers carry data-live attributes so paintLive() can
+   refresh them in place without re-rendering the page.
+   ============================================================ */
+
+const cleanups = [];
+const onCleanup = fn => cleanups.push(fn);
+const mem = { slide: 0, marketTab: "india", listTab: "total", newsFilter: "all" };
+const REDUCED = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- live binding ---------- */
+function liveSpan(film, field, arg) {
+  return h("span", { class: "live-val", "data-live": `${film.f.id}|${field}${arg ? "|" + arg : ""}` });
+}
+function liveText(film, field, arg) {
+  const m = film.m;
+  if (field === "live") return money(m, film.today.live);
+  if (field === "proj") return money(m, film.today.proj);
+  if (field === "total") return money(m, film.total);
+  if (field === "pace") return `${Math.round(film.frac * 100)}% of the day`;
+  if (field === "lang") { const r = film.langRows.find(x => x.lang === arg); return r ? money(m, r.today) : ""; }
+  if (field === "langTotal") { const r = film.langRows.find(x => x.lang === arg); return r ? money(m, r.total) : ""; }
+  if (field === "ww") return money(m, film.ww.worldwide);
+  return "";
+}
+function paintLive(root = document) {
+  $$("[data-live]", root).forEach(el => {
+    const [id, field, arg] = el.dataset.live.split("|"), film = FILM_BY_ID[id];
+    if (film && !film.upcoming) el.textContent = liveText(film, field, arg);
+  });
+  $$("[data-updated]", root).forEach(el => { el.textContent = `Updated ${localTimeLabel(MARKETS[el.dataset.updated].tz)} ${MARKETS[el.dataset.updated].tzShort}`; });
+}
+
+/* ---------- layout helpers ---------- */
+function pageHead(title, sub, ...extra) {
+  return h("header", { class: "page-head" },
+    h("div", null, h("h1", { id: "pageTitle", tabindex: "-1" }, title), sub ? h("p", { class: "muted" }, sub) : null), ...extra);
+}
+const cols = (main, side) => h("div", { class: "cols" }, h("div", { class: "col-main" }, ...main), h("aside", { class: "col-side", "aria-label": "Sidebar" }, ...side));
+function marketTabs(onPick) {
+  const wrap = tabs([["india", "India"], ["pakistan", "Pakistan"]], mem.marketTab, k => { mem.marketTab = k; setPressed(wrap, k); onPick(k); }, "Select market");
+  return wrap;
+}
+function filmsOf(market, pool = FILMS) { return pool.filter(f => f.m.key === market && !f.upcoming); }
+
+/* ---------- live row (home, industry, live pages) ---------- */
+function liveRow(film) {
+  const day = film.age + 1, chips = [];
+  chips.push(h("a", { class: "chip chip-live", href: `#/film/${film.f.id}/days` }, h("i", { class: "dot-live", "aria-hidden": "true" }), `Day ${day} collection`));
+  if (film.age >= 1) chips.push(chip(`Day ${day - 1} collection`, `#/film/${film.f.id}/days`));
+  chips.push(chip(`Day ${day + 1} advance`, `#/film/${film.f.id}/advance`), chip(`Day ${day + 2} advance`, `#/film/${film.f.id}/advance`));
+  if (Object.keys(film.f.langs).length > 1) chips.push(chip("Language-wise", `#/film/${film.f.id}/languages`));
+  chips.push(chip("Worldwide day-wise", `#/film/${film.f.id}/worldwide`), chip("Shows and seats", `#/film/${film.f.id}/occupancy`));
+  return h("article", { class: "live-row" },
+    poster(film, "sm"),
+    h("div", { class: "live-main" },
+      h("h3", null, filmLink(film), " ", h("span", { class: "badge b-stage" }, dayLabel(film))),
+      h("p", { class: "muted" }, `${Object.keys(film.f.langs).join(", ")} · Released ${fmtWeekday(film.rel)} ${fmtShort(film.rel)}`),
+      h("div", { class: "chips" }, chips)),
+    h("div", { class: "live-amt" },
+      h("strong", { class: "amt-live" }, liveSpan(film, "live")),
+      h("small", null, "Today, live estimate"),
+      film.change != null ? h("span", { class: "amt-trend" }, trend(film.change), h("small", null, " vs yesterday")) : null));
+}
+function livePanel(films, limit) {
+  const body = h("div", { class: "live-list" }), btn = h("button", { type: "button", class: "show-all" });
+  let all = false;
+  const paint = () => {
+    body.replaceChildren(...(all ? films : films.slice(0, limit)).map(liveRow));
+    btn.textContent = all ? "Show fewer" : `Show all ${films.length}`;
+    btn.setAttribute("aria-expanded", String(all));
+    btn.hidden = films.length <= limit;
+    paintLive(body);
+  };
+  btn.addEventListener("click", () => { all = !all; paint(); });
+  paint();
+  const markets = [...new Set(films.map(f => f.m.key))];
+  return h("section", { class: "panel live-panel", "aria-labelledby": "liveTitle" },
+    h("div", { class: "panel-head" },
+      h("h2", { id: "liveTitle", class: "panel-title" }, h("i", { class: "dot-live", "aria-hidden": "true" }), "Live now"),
+      h("span", { class: "muted" }, markets.map(k => h("span", { "data-updated": k, class: "upd" })).flatMap((n, i) => i ? [" · ", n] : [n])),
+      h("a", { class: "link-more", href: "#/live" }, "See all live →")),
+    body, h("div", { class: "show-all-wrap" }, btn));
+}
+
+/* ---------- HOME ---------- */
+function heroSlider() {
+  const slides = INDUSTRIES.map(ind => {
+    const pool = FILMS.filter(f => f.f.ind === ind.key && !f.upcoming);
+    return { ind, film: pool.sort((a, b) => b.today.proj - a.today.proj)[0] };
+  }).filter(s => s.film);
+  const stage = h("div", { class: "hero-stage" }), dots = h("div", { class: "hero-dots", role: "group", "aria-label": "Choose industry slide" });
+  const pauseBtn = h("button", { type: "button", class: "icon-btn", "aria-label": "Pause slides" }, "❚❚");
+  let timer = null, paused = REDUCED(), hover = false;
+  const render = () => {
+    const s = slides[mem.slide], f = s.film;
+    stage.replaceChildren(h("article", { class: "hero-slide", style: { "--h": f.hue }, "aria-roledescription": "slide", "aria-label": `${mem.slide + 1} of ${slides.length}: ${s.ind.label}` },
+      h("div", { class: "hero-art", "aria-hidden": "true" }, h("span", { class: "hero-art-ind" }, s.ind.label), h("span", { class: "hero-art-title" }, f.f.title)),
+      h("div", { class: "hero-info" },
+        h("span", { class: "tag" }, s.ind.label),
+        h("h2", null, h("a", { href: `#/film/${f.f.id}` }, f.f.title)),
+        h("p", { class: "hero-line" }, `${dayLabel(f)} · ${Object.keys(f.f.langs).join(", ")}`),
+        h("p", { class: "hero-num" }, h("strong", null, liveSpan(f, "live")), h("span", null, " today, live estimate "), f.change != null ? trend(f.change) : null),
+        h("div", { class: "hero-actions" }, h("a", { class: "btn btn-primary", href: `#/film/${f.f.id}` }, "Open box office"), h("a", { class: "btn", href: `#/industry/${s.ind.key}` }, `All ${s.ind.label} films`)))));
+    $$("button", dots).forEach((b, i) => b.setAttribute("aria-current", String(i === mem.slide)));
+    paintLive(stage);
+  };
+  const go = i => { mem.slide = (i + slides.length) % slides.length; render(); };
+  slides.forEach((s, i) => dots.append(h("button", { type: "button", class: "dot-btn", "aria-label": `${s.ind.label}: ${s.film.f.title}`, onclick: () => go(i) })));
+  const schedule = () => { clearInterval(timer); if (!paused && !hover) timer = setInterval(() => go(mem.slide + 1), 6500); stage.setAttribute("aria-live", paused ? "polite" : "off"); };
+  const setPaused = p => { paused = p; pauseBtn.textContent = p ? "▶" : "❚❚"; pauseBtn.setAttribute("aria-label", p ? "Play slides" : "Pause slides"); schedule(); };
+  pauseBtn.addEventListener("click", () => setPaused(!paused));
+  const wrap = h("section", { class: "hero", "aria-roledescription": "carousel", "aria-label": "Top film in each industry" },
+    stage, h("div", { class: "hero-controls" },
+      h("button", { type: "button", class: "icon-btn", "aria-label": "Previous slide", onclick: () => go(mem.slide - 1) }, "‹"), dots, h("button", { type: "button", class: "icon-btn", "aria-label": "Next slide", onclick: () => go(mem.slide + 1) }, "›"), pauseBtn));
+  wrap.addEventListener("mouseenter", () => { hover = true; schedule(); });
+  wrap.addEventListener("mouseleave", () => { hover = false; schedule(); });
+  wrap.addEventListener("focusin", () => { hover = true; schedule(); });
+  wrap.addEventListener("focusout", () => { hover = false; schedule(); });
+  if (mem.slide >= slides.length) mem.slide = 0;
+  render(); setPaused(paused);
+  onCleanup(() => clearInterval(timer));
+  return wrap;
+}
+
+function industryCards() {
+  return h("section", { class: "panel", "aria-labelledby": "indTitle" },
+    h("div", { class: "panel-head" }, h("h2", { id: "indTitle", class: "panel-title" }, "Browse by industry")),
+    h("div", { class: "ind-grid" }, INDUSTRIES.map(ind => {
+      const films = FILMS.filter(f => f.f.ind === ind.key && !f.upcoming), m = MARKETS[ind.market];
+      const today = films.reduce((s, f) => s + f.today.live, 0), running = films.filter(f => f.age <= 13).length;
+      return h("a", { class: "ind-card", href: `#/industry/${ind.key}`, style: { "--h": ind.hue } },
+        h("strong", null, ind.label), h("span", { class: "muted" }, ind.lang),
+        h("span", { class: "ind-num" }, h("em", null, "Today so far "), money(m, today)),
+        h("span", { class: "muted" }, `${running} in release week or week two`));
+    })));
+}
+
+function newsCards(items) {
+  return h("div", { class: "news-grid" }, items.map(n => h("article", { class: "news-card" },
+    h("div", { class: "news-top" }, h("span", { class: "tag" }, n.tag), sampleBadge()),
+    h("h3", null, n.title), h("p", { class: "muted" }, n.text), h("small", { class: "muted" }, fmtDate(n.date)))));
+}
+
+function sideInCinemas() {
+  const films = [...RUNNING].slice(0, 7);
+  return panel("In cinemas now", h("ul", { class: "side-list" }, films.map(f => {
+    const y = f.yesterday;
+    return h("li", null,
+      h("div", null, h("strong", null, filmLink(f)), h("small", { class: "muted" }, y ? `Day ${f.age} · ${fmtShort(y.date)}` : "Opening day today")),
+      h("div", { class: "side-amt" }, h("b", null, y ? money(f.m, y.v) : money(f.m, f.today.live)), f.days.length > 2 ? trend((y.v - f.days[f.days.length - 3].v) / f.days[f.days.length - 3].v * 100) : null));
+  })), h("a", { class: "link-more", href: "#/box-office" }, "Box office lists →"));
+}
+function sideClocks() {
+  return panel("Market time", h("div", { class: "clock-list" }, Object.values(MARKETS).map(m => h("div", { class: "clock" },
+    h("span", { class: "muted" }, `${m.name} (${m.tzShort})`), h("strong", { class: "clock-time", "data-tz": m.tz }, "…"), h("small", { class: "muted" }, `${m.cur.trim()} ${m.unitName}`)))));
+}
+function sideUpcoming(limit = 4) {
+  return panel("Releasing soon", h("ul", { class: "side-list" }, UPCOMING.slice(0, limit).map(f => h("li", null,
+    h("div", null, h("strong", null, filmLink(f)), h("small", { class: "muted" }, `${f.ind.label} · ${fmtWeekday(f.rel)} ${fmtShort(f.rel)}`)),
+    followButton(f.f.id)))), h("a", { class: "link-more", href: "#/advance" }, "Advance booking →"));
+}
+
+function viewHome() {
+  const all = [...RUNNING];
+  const main = [
+    h("h1", { class: "sr-only", id: "pageTitle", tabindex: "-1" }, "OliveReel: live box office for India and Pakistan"),
+    heroSlider(), livePanel(all, 3), industryCards(),
+    h("section", { class: "panel" }, h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Latest reports"), h("a", { class: "link-more", href: "#/news" }, "All reports →")), newsCards(NEWS.slice(0, 3)))
+  ];
+  return { title: "OliveReel: live box office for India and Pakistan", node: cols(main, [sideInCinemas(), sideClocks(), sideUpcoming()]) };
+}
+
+/* ---------- sortable films table ---------- */
+function filmsTable(films, { industryCol = true } = {}) {
+  let sortKey = "total", dir = -1, q = "";
+  const m = films[0] ? films[0].m : MARKETS.india;
+  const cols_ = [["rank", "#", "Sort by rank"], ["title", "Film"], industryCol ? ["industry", "Industry"] : null, ["release", "Released"], ["day1", `Day 1`], ["total", "Total (live)"], ["recovery", "Budget recovered"], ["verdict", "Verdict"]].filter(Boolean);
+  const search = h("input", { class: "search", type: "search", placeholder: "Search film or language…", "aria-label": "Search films by title or language" });
+  const tbody = h("tbody"), thead = h("thead");
+  const rows = () => {
+    let r = films.map(f => ({ f, rank: 0, title: f.f.title, industry: f.ind.label, release: +f.rel, day1: f.f.d1, total: f.total, recovery: f.recovery, verdict: f.verdict }));
+    [...r].sort((a, b) => b.total - a.total).forEach((x, i) => x.rank = i + 1);
+    if (q) r = r.filter(x => `${x.title} ${Object.keys(x.f.f.langs).join(" ")}`.toLowerCase().includes(q));
+    return r.sort((a, b) => { const x = a[sortKey], y = b[sortKey]; return (typeof x === "number" ? x - y : String(x).localeCompare(String(y))) * dir; });
+  };
+  const paint = () => {
+    thead.replaceChildren(h("tr", null, cols_.map(([k, label, aria]) => {
+      const th = h("th", { scope: "col", "aria-sort": sortKey === k ? (dir === 1 ? "ascending" : "descending") : "none" },
+        h("button", { type: "button", class: "sort-button", "aria-label": aria || null, onclick: () => { dir = sortKey === k ? -dir : (["rank", "title", "industry", "release", "verdict"].includes(k) ? 1 : -1); sortKey = k; paint(); } },
+          label, h("span", { class: "arrow", "aria-hidden": "true" }, sortKey === k ? (dir === 1 ? " ▲" : " ▼") : "")));
+      return th;
+    })));
+    const r = rows();
+    tbody.replaceChildren(...(r.length ? r.map(x => h("tr", null,
+      h("td", null, x.rank), h("td", null, filmLink(x.f)), industryCol ? h("td", null, x.industry) : null, h("td", null, fmtDate(x.f.rel)),
+      h("td", { class: "num" }, money(m, x.day1)), h("td", { class: "num" }, money(m, x.total)),
+      h("td", { class: "num" }, `${Math.round(x.recovery)}%`), h("td", null, verdictBadge(x.f)))) : [h("tr", null, h("td", { colspan: cols_.length, class: "empty-cell" }, "No films match this search. Clear the search box to see every title."))]));
+  };
+  search.addEventListener("input", () => { q = search.value.trim().toLowerCase(); paint(); });
+  paint();
+  return h("div", null, h("div", { class: "table-tools" }, search), h("div", { class: "table-wrap" }, h("table", null, thead, tbody)),
+    h("p", { class: "note" }, `Amounts in ${m.unitName}. Total includes today's live estimate. Rank is within this market.`));
+}
+
+/* ---------- INDUSTRY ---------- */
+function viewIndustry(key) {
+  const ind = IND[key];
+  if (!ind) return viewNotFound();
+  const m = MARKETS[ind.market], films = FILMS.filter(f => f.f.ind === key && !f.upcoming);
+  const running = films.filter(f => f.age <= 13).sort((a, b) => b.today.proj - a.today.proj);
+  const total = films.reduce((s, f) => s + f.total, 0), hits = films.filter(f => /Hit|Blockbuster/.test(f.verdict)).length;
+  const top = [...films].sort((a, b) => b.total - a.total).slice(0, 8);
+  const head = h("header", { class: "ind-head", style: { "--h": ind.hue } },
+    h("div", null, h("h1", { id: "pageTitle", tabindex: "-1" }, `${ind.label} box office`), h("p", null, `${ind.about} Amounts in ${m.unitName}.`)),
+    h("div", { class: "chips" }, INDUSTRIES.map(i => h("a", { class: "chip", href: `#/industry/${i.key}`, "aria-current": i.key === key ? "page" : null }, i.label))));
+  const stats = h("div", { class: "stat-grid" }, statCard("Films tracked", String(films.length)), statCard("Total net so far", money(m, total), "All tracked films, live estimate included"), statCard("Hits or better", String(hits), `of ${films.length} tracked films`), statCard("Now in cinemas", String(running.length), "Release week or week two"));
+  const main = [head, stats,
+    running.length ? livePanel(running, 4) : panel("Live now", empty(`No ${ind.label} film is in its first two weeks right now. Check back when the next release opens.`)),
+    panel("Top films by total", barChart({ bars: top.map(f => ({ label: f.f.title.length > 11 ? f.f.title.slice(0, 10) + "…" : f.f.title, value: f.total, kind: "done", tip: `${f.f.title}: ${money(m, f.total)}` })), unit: m.unitName, title: `Top ${ind.label} films by total`, desc: top.map(f => `${f.f.title} ${money(m, f.total)}`).join("; ") })),
+    panel(`All ${ind.label} films`, filmsTable(films, { industryCol: false }))];
+  return { title: `${ind.label} box office | OliveReel`, node: cols(main, [sideInCinemas(), sideClocks(), sideUpcoming(3)]) };
+}
+
+/* ---------- FILM DETAIL ---------- */
+function shiftStarted(tz, shift) {
+  const hr = Number(new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", hour12: false }).format(new Date())) % 24;
+  return hr >= { Morning: 9, Matinee: 12, Evening: 16, Night: 20 }[shift];
+}
+function dayTable(film) {
+  const m = film.m, rows = film.days.map((d, i) => {
+    const prev = i ? film.days[i - 1].v : null, chg = prev ? (d.v - prev) / prev * 100 : null;
+    return h("tr", { class: d.isToday ? "row-live" : "" },
+      h("th", { scope: "row" }, `Day ${d.i + 1}`), h("td", null, `${fmtWeekday(d.date)} ${fmtShort(d.date)}`),
+      h("td", { class: "num" }, d.isToday ? [liveSpan(film, "live"), h("small", { class: "muted block" }, `Early estimate for the full day: ${money(m, d.proj)}`)] : money(m, d.v)),
+      h("td", null, chg == null ? "–" : trend(chg)), h("td", { class: "num" }, money(m, film.cum[i])),
+      h("td", null, `${film.occ[i].avg}%`), h("td", null, d.isToday ? h("span", { class: "badge b-live" }, "Live") : d.edited ? null : h("span", { class: "muted" }, "Estimate"), d.edited ? h("span", { class: "pill-edit" }, "Edited") : null));
+  });
+  film.advance.forEach(a => rows.push(h("tr", { class: "row-fc" }, h("th", { scope: "row" }, `Day ${a.i + 1}`), h("td", null, `${fmtWeekday(a.date)} ${fmtShort(a.date)}`),
+    h("td", { class: "num" }, `~${money(m, a.est)}`), h("td", null, "–"), h("td", { class: "num" }, "–"), h("td", null, "–"), h("td", null, h("span", { class: "badge b-fc" }, "Advance-based")))));
+  return h("div", { class: "table-wrap" }, h("table", { class: "daily" },
+    h("thead", null, h("tr", null, ["Day", "Date", `Net (${m.unit})`, "vs previous day", "Cumulative", "Occupancy", "Status"].map(t => h("th", { scope: "col" }, t)))), h("tbody", null, rows)));
+}
+const dayNet = d => d.isToday ? d.proj : d.v;
+
+function dayStrip(film) {
+  return h("ol", { class: "day-strip", "aria-label": "Day by day collection" }, film.days.map((d, i) => {
+    const prev = i ? dayNet(film.days[i - 1]) : null, chg = prev ? (dayNet(d) - prev) / prev * 100 : null;
+    return h("li", { class: `strip-day${d.isToday ? " is-today" : ""}` },
+      h("span", { class: "strip-label" }, `Day ${d.i + 1}`, d.isToday ? " (today)" : ""),
+      h("strong", null, money(film.m, dayNet(d))),
+      chg == null ? h("small", { class: "muted" }, "Opening day") : trend(chg));
+  }));
+}
+
+function liveCompare(film) {
+  const y = film.yesterday;
+  if (!y) return null;
+  const m = film.m, t = film.today, same = r2(y.v * film.frac), vsSame = same > 0 ? (t.live - same) / same * 100 : null;
+  const d1 = film.days[0].v, vsD1 = (t.proj - d1) / d1 * 100, best = Math.max(...film.days.map(dayNet)), vsBest = (t.proj - best) / best * 100;
+  return h("div", { class: "stat-grid" },
+    statCard("Today so far", liveSpan(film, "live"), [liveSpan(film, "pace")], "stat-live"),
+    statCard("Yesterday at this time", money(m, same), `Yesterday's full day: ${money(m, y.v)}`),
+    statCard("Live against yesterday", trend(vsSame), "Same time of day"),
+    statCard("Today against Day 1", trend(vsD1), `Day 1 was ${money(m, d1)}`),
+    statCard("Today against best day", trend(vsBest), `Best day was ${money(m, best)}`));
+}
+
+function compareBlock(film) {
+  const m = film.m, pool = FILMS.filter(f => !f.upcoming && f.m.key === m.key && f !== film);
+  if (!pool.length) return null;
+  pool.sort((a, b) => Math.abs(a.total - film.total) - Math.abs(b.total - film.total));
+  let other = pool[0];
+  const out = h("div", { class: "tab-body" });
+  const sel = h("select", { id: "inlineCmp", class: "select" }, pool.map(f => h("option", { value: f.f.id }, f.f.title)));
+  const paint = () => {
+    const n = Math.min(film.days.length, other.days.length), A = film.days.slice(0, n).map(dayNet), B = other.days.slice(0, n).map(dayNet);
+    const rows = A.map((v, i) => h("tr", null, h("th", { scope: "row" }, `Day ${i + 1}`), h("td", { class: "num" }, money(m, v)), h("td", { class: "num" }, money(m, B[i])), h("td", null, trend((v - B[i]) / B[i] * 100))));
+    out.replaceChildren(
+      lineChart({ labels: A.map((_, i) => `D${i + 1}`), series: [{ name: film.f.title, values: A, cls: "line-a" }, { name: other.f.title, values: B, cls: "line-b" }], unit: `Daily net, ${m.unitName}`, title: `${film.f.title} against ${other.f.title}, daily net`, desc: `Daily net for the first ${n} day(s) of each film.` }),
+      h("div", { class: "legend" }, h("span", null, h("i", { class: "sw line-a" }), film.f.title), h("span", null, h("i", { class: "sw line-b" }), other.f.title)),
+      h("div", { class: "table-wrap" }, h("table", null, h("thead", null, h("tr", null, ["Day", film.f.title, other.f.title, `${film.f.title} against ${other.f.title}`].map(t => h("th", { scope: "col" }, t)))), h("tbody", null, rows))),
+      h("p", { class: "note" }, `Compared over the first ${n} day(s) that both films have been in cinemas.`));
+  };
+  sel.addEventListener("change", () => { other = FILM_BY_ID[sel.value]; paint(); });
+  paint();
+  return h("section", { class: "block" }, h("h3", { class: "sub-title" }, "Compare with another film"), h("label", { class: "field", for: "inlineCmp" }, "Pick a film from the same market", sel), out);
+}
+
+function tabDays(film) {
+  const m = film.m, days = film.days;
+  const bars = [...days.map(d => ({ label: `D${d.i + 1}`, value: dayNet(d), kind: d.isToday ? "live" : "done", tip: `Day ${d.i + 1}, ${fmtShort(d.date)}: ${money(m, dayNet(d))}${d.isToday ? " (early estimate)" : ""}` })),
+    ...film.advance.map(a => ({ label: `D${a.i + 1}`, value: a.est, kind: "fc", tip: `Day ${a.i + 1}, ${fmtShort(a.date)}: about ${money(m, a.est)} (advance-based)` }))];
+  const points = days.map(d => ({ label: `D${d.i + 1}`, value: dayNet(d), tip: `Day ${d.i + 1}, ${fmtShort(d.date)}: ${money(m, dayNet(d))}` }));
+  const changes = days.slice(1).map((d, i) => ({ label: `D${d.i + 1}`, value: (dayNet(d) - dayNet(days[i])) / dayNet(days[i]) * 100, tip: `Day ${d.i + 1} against day ${d.i}: ${pct((dayNet(d) - dayNet(days[i])) / dayNet(days[i]) * 100)}` }));
+  const story = days.slice(0, 8).map((d, i) => i === 0 ? `Day 1 ${money(m, dayNet(d))}` : `Day ${i + 1} ${money(m, dayNet(d))}, ${dayNet(d) >= dayNet(days[i - 1]) ? "up" : "down"} ${Math.abs((dayNet(d) - dayNet(days[i - 1])) / dayNet(days[i - 1]) * 100).toFixed(0)} percent`).join("; ");
+  return h("div", { class: "tab-body" },
+    liveCompare(film),
+    h("section", { class: "block" }, h("h3", { class: "sub-title" }, "Day by day"), dayStrip(film)),
+    h("section", { class: "block" }, h("h3", { class: "sub-title" }, "Daily net"),
+      h("div", { class: "legend" }, h("span", null, h("i", { class: "sw done" }), "Final estimate"), h("span", null, h("i", { class: "sw live" }), "Today, early estimate"), h("span", null, h("i", { class: "sw fc" }), "Next days, from advance booking")),
+      barChart({ bars, unit: m.unitName, title: `${film.f.title} day-wise net`, desc: `Day-wise net collection in ${m.unitName}, with today and the next three days estimated.` })),
+    days.length > 1 ? h("section", { class: "block" }, h("h3", { class: "sub-title" }, "Rise and fall"),
+      h("div", { class: "legend" }, h("span", null, h("i", { class: "sw up" }), "Went up from the day before"), h("span", null, h("i", { class: "sw down" }), "Came down from the day before")),
+      trendChart({ points, unit: m.unitName, title: `${film.f.title} daily net, rise and fall`, desc: story }),
+      h("p", { class: "sr-only" }, story)) : null,
+    changes.length ? h("section", { class: "block" }, h("h3", { class: "sub-title" }, "Change from the previous day"),
+      deltaChart({ items: changes, title: `${film.f.title} change from the previous day`, desc: "Percent change in net collection compared with the day before." })) : null,
+    h("section", { class: "block" }, h("h3", { class: "sub-title" }, "Every day"), dayTable(film)),
+    compareBlock(film));
+}
+
+function occCell(p) { return h("td", { class: "occ", style: { "--o": clamp(p, 0, 100) / 100 } }, `${Math.round(p)}%`); }
+function tabAdvance(film) {
+  const m = film.m;
+  const rows = film.advance.map(a => h("tr", null,
+    h("th", { scope: "row" }, `Day ${a.i + 1}`), h("td", null, `${fmtWeekday(a.date)} ${fmtDate(a.date)}`), h("td", { class: "num" }, money(m, a.advance)),
+    h("td", { class: "num" }, nfIN.format(a.tickets)), h("td", { class: "num" }, nfIN.format(a.shows)), h("td", { class: "num" }, nfIN.format(a.seats)), h("td", { class: "num" }, `~${money(m, a.est)}`)));
+  const detail = film.advance.flatMap(a => [...SHIFT_DEF.map((sd, k) => {
+    const x = a.shifts[sd.key];
+    return h("tr", null, k === 0 ? h("th", { scope: "row", rowspan: "5" }, `Day ${a.i + 1}`, h("small", { class: "muted block" }, fmtShort(a.date))) : null,
+      h("td", null, sd.key, h("small", { class: "muted block" }, sd.time)), h("td", { class: "num" }, nfIN.format(x.shows)), h("td", { class: "num" }, nfIN.format(x.seats)), h("td", { class: "num" }, nfIN.format(x.sold)), occCell(x.occ));
+  }), h("tr", { class: "row-total" }, h("td", null, "All shifts"), h("td", { class: "num" }, nfIN.format(a.total.shows)), h("td", { class: "num" }, nfIN.format(a.total.seats)), h("td", { class: "num" }, nfIN.format(a.total.sold)), occCell(a.total.occ))]);
+  const note = film.upcoming
+    ? (film.daysToRelease > 4 ? `Advance booking has not opened yet. For this release it is expected about ${Math.max(0, film.daysToRelease - 4)} day(s) before opening day.` : `Opening day advance so far. The full-day estimate will firm up as shows fill.`)
+    : "Early estimate is the projected full-day net, based on advance sales so far and the film's recent pattern.";
+  return h("div", { class: "tab-body" },
+    h("div", { class: "table-wrap" }, h("table", null,
+      h("thead", null, h("tr", null, ["Day", "Date", "Advance (gross)", "Tickets sold", "Shows", "Seats", "Early estimate (net)"].map(t => h("th", { scope: "col" }, t)))), h("tbody", null, rows))),
+    h("h3", { class: "sub-title" }, "Advance by shift"),
+    h("div", { class: "table-wrap" }, h("table", null,
+      h("thead", null, h("tr", null, ["Day", "Shift", "Shows", "Seats", "Tickets sold", "Occupancy"].map(t => h("th", { scope: "col" }, t)))), h("tbody", null, detail))),
+    h("p", { class: "note" }, note));
+}
+function tabLanguages(film) {
+  const m = film.m;
+  if (film.langRows.length === 1) return empty(`${film.f.title} released in ${film.langRows[0].lang} only, so the language-wise view matches the day-wise totals.`);
+  const stack = h("div", { class: "stack", role: "img", "aria-label": film.langRows.map(r => `${r.lang} ${Math.round(r.share * 100)} percent`).join(", ") },
+    film.langRows.map((r, i) => h("span", { class: `stack-seg s${i % 5}`, style: { width: `${r.share * 100}%` }, title: `${r.lang}: ${Math.round(r.share * 100)}%` }, r.share > .09 ? r.lang : "")));
+  const rows = film.langRows.map(r => h("tr", null, h("th", { scope: "row" }, r.lang), h("td", { class: "num" }, `${Math.round(r.share * 100)}%`), h("td", { class: "num" }, liveSpan(film, "langTotal", r.lang)), h("td", { class: "num" }, liveSpan(film, "lang", r.lang)), h("td", { class: "num" }, `~${money(m, r.todayProj)}`)));
+  return h("div", null, stack, h("div", { class: "table-wrap" }, h("table", null, h("thead", null, h("tr", null, ["Language", "Share", "Total (live)", "Today, live", "Today, early estimate"].map(t => h("th", { scope: "col" }, t)))), h("tbody", null, rows))));
+}
+function tabWorldwide(film) {
+  const m = film.m, w = film.ww;
+  return h("div", null, h("div", { class: "stat-grid" },
+    statCard(`${m.name} net`, money(m, w.net), "Live estimate"), statCard(`${m.name} gross`, money(m, w.gross), m.gst > 1 ? "Net plus tax (sample 18%)" : "Equal to net in this sample"),
+    statCard(m.overseasLabel, money(m, w.overseas), "Sample estimate"), statCard("Worldwide gross", money(m, w.worldwide), "Live estimate", "stat-accent")),
+    h("p", { class: "note" }, `Overseas is modelled as ${Math.round(film.f.ovr * 100)}% of ${m.name} gross for this sample film. Replace with reported territory data before publishing.`));
+}
+function editForm(film, idx) {
+  const id = film.f.id, m = film.m, day = film.shows[idx], dayRow = film.days[idx], isToday = idx === film.age, inputs = {};
+  const status = h("p", { class: "form-status", role: "status", "aria-live": "polite" });
+  const mk = (key, label, value, step) => {
+    const input = h("input", { id: `ed-${key}`, type: "number", min: "0", step, inputmode: "decimal", value: String(value) });
+    inputs[key] = input;
+    return h("label", { class: "field", for: `ed-${key}` }, label, input);
+  };
+  const done = msg => { Object.assign(film, computeFilm(film.f)); mem.flash = msg; mem.editOpen = false; rerender(); };
+  const reset = () => {
+    if (EDITS[id]) { delete EDITS[id][idx]; if (!Object.keys(EDITS[id]).length) delete EDITS[id]; }
+    saveEdits(); done(`Day ${idx + 1} is back to the sample numbers.`);
+  };
+  const form = h("form", { class: "edit-form", novalidate: "" },
+    h("p", { class: "muted" }, `Editing Day ${idx + 1}, ${fmtDate(day.date)}. Type your own numbers. ${isToday ? "For today, enter tickets sold so far. " : ""}They are saved in this browser only.`),
+    mk("net", isToday ? `Full-day net estimate (${m.unitName})` : `Net collection (${m.unitName})`, isToday ? dayRow.proj : dayRow.v, "0.01"),
+    h("div", { class: "edit-grid" }, SHIFT_DEF.map(sd => {
+      const x = day.shifts[sd.key];
+      return h("fieldset", null, h("legend", null, `${sd.key} (${sd.time})`),
+        mk(`${sd.key}-shows`, "Shows", x.shows, "1"), mk(`${sd.key}-seats`, "Total seats", x.seats, "1"), mk(`${sd.key}-sold`, "Tickets sold", isToday ? film.liveShows[sd.key].soldNow : x.sold, "1"));
+    })),
+    h("div", { class: "form-actions" }, h("button", { type: "submit", class: "btn btn-primary btn-small" }, "Save numbers"), h("button", { type: "button", class: "btn btn-small", onclick: reset }, "Reset this day to sample"), status));
+  form.addEventListener("submit", ev => {
+    ev.preventDefault();
+    const entry = { net: Number(inputs.net.value), shifts: {} };
+    let err = "";
+    if (inputs.net.value.trim() === "" || !Number.isFinite(entry.net) || entry.net < 0) err = "Enter a net collection of zero or more.";
+    SHIFT_DEF.forEach(sd => {
+      const raw = ["shows", "seats", "sold"].map(k => inputs[`${sd.key}-${k}`].value.trim()), v = raw.map(Number);
+      if (!err) {
+        if (raw.some(r => r === "") || !v.every(n => Number.isFinite(n) && n >= 0)) err = `${sd.key}: enter shows, seats and tickets sold as numbers of zero or more.`;
+        else if (v[2] > v[1]) err = `${sd.key}: tickets sold cannot be more than seats.`;
+        else if (v[1] > 0 && v[0] === 0) err = `${sd.key}: seats need at least one show.`;
+      }
+      entry.shifts[sd.key] = { shows: v[0], seats: v[1], sold: v[2] };
+    });
+    if (err) { status.className = "form-status err"; status.textContent = err; return; }
+    (EDITS[id] = EDITS[id] || {})[idx] = entry;
+    done(saveEdits() ? `Day ${idx + 1} saved. These numbers now show across the site in this browser.` : `Day ${idx + 1} applied, but this browser blocked saving, so it will reset on reload.`);
+  });
+  return form;
+}
+
+function tabShows(film) {
+  const m = film.m, id = film.f.id, todayIdx = film.age;
+  const idx = mem.showDay && mem.showDay[id] != null ? clamp(mem.showDay[id], 0, todayIdx) : todayIdx;
+  const day = film.shows[idx], isToday = idx === todayIdx;
+  const wrap = h("div", { class: "tab-body" }), redo = () => wrap.replaceWith(tabShows(film));
+  const soldOf = k => isToday ? film.liveShows[k].soldNow : day.shifts[k].sold;
+  const sold = isToday ? film.soldNow : day.total.sold, occ = day.total.seats ? sold / day.total.seats * 100 : 0;
+  const picker = h("div", { class: "chips", role: "group", "aria-label": "Choose a day" }, film.shows.slice(-7).map(s =>
+    h("button", { type: "button", class: "chip", "aria-pressed": String(s.i === idx), onclick: () => { mem.showDay = mem.showDay || {}; mem.showDay[id] = s.i; mem.editOpen = false; redo(); } }, `Day ${s.i + 1}${s.i === todayIdx ? " (today)" : ""}`)));
+  const rows = SHIFT_DEF.map(sd => {
+    const x = day.shifts[sd.key], so = soldOf(sd.key), live = isToday ? film.liveShows[sd.key] : null;
+    return h("tr", null, h("th", { scope: "row" }, sd.key, x.edited ? h("span", { class: "pill-edit" }, "Edited") : null, h("small", { class: "muted block" }, sd.time)),
+      h("td", { class: "num" }, nfIN.format(x.shows)), h("td", { class: "num" }, nfIN.format(x.seats)), h("td", { class: "num" }, nfIN.format(so)), occCell(x.seats ? so / x.seats * 100 : 0),
+      isToday ? h("td", null, h("span", { class: `badge ${live.status === "Running" ? "b-live" : live.status === "Completed" ? "b-stage" : "v-early"}` }, live.status)) : null,
+      isToday ? h("td", { class: "num" }, nfIN.format(x.sold)) : null);
+  });
+  const totalRow = h("tr", { class: "row-total" }, h("th", { scope: "row" }, "All shifts"), h("td", { class: "num" }, nfIN.format(day.total.shows)), h("td", { class: "num" }, nfIN.format(day.total.seats)), h("td", { class: "num" }, nfIN.format(sold)), occCell(occ), isToday ? h("td") : null, isToday ? h("td", { class: "num" }, nfIN.format(day.total.sold)) : null);
+  const head = ["Shift", "Shows", "Seats", isToday ? "Tickets sold so far" : "Tickets sold", isToday ? "Occupancy so far" : "Occupancy", ...(isToday ? ["Status", "Expected by close"] : [])];
+  const flash = mem.flash ? h("p", { class: "form-status ok", role: "status", tabindex: "-1" }, mem.flash) : null;
+  if (flash) { mem.flash = null; setTimeout(() => flash.focus({ preventScroll: true }), 0); }
+  appendKids(wrap, [
+    flash,
+    h("div", { class: "stat-grid" }, statCard("Shows", nfIN.format(day.total.shows), isToday ? "Scheduled today" : "On this day"), statCard("Seats", nfIN.format(day.total.seats), `About ${nfIN.format(Math.round(day.total.seats / Math.max(1, day.total.shows)))} per show`),
+      statCard(isToday ? "Tickets sold so far" : "Tickets sold", nfIN.format(sold), isToday ? "Live estimate" : "Final estimate", isToday ? "stat-live" : ""), statCard("Occupancy", `${Math.round(occ)}%`, isToday ? "Of all seats, so far" : "Of all seats")),
+    picker,
+    h("div", { class: "table-wrap" }, h("table", null, h("thead", null, h("tr", null, head.map(t => h("th", { scope: "col" }, t)))), h("tbody", null, rows, totalRow))),
+    h("div", { class: "edit-bar" }, h("button", { type: "button", class: "btn btn-small", "aria-expanded": String(!!mem.editOpen), onclick: () => { mem.editOpen = !mem.editOpen; redo(); } }, mem.editOpen ? "Close editor" : `Edit numbers for Day ${idx + 1}`),
+      h("small", { class: "muted" }, "Add your own shows, seats and tickets. Saved in this browser only.")),
+    mem.editOpen ? editForm(film, idx) : null,
+    h("p", { class: "note" }, "Occupancy is tickets sold divided by seats. Sample figures unless you edit them.")]);
+  return wrap;
+}
+
+function viewFilm(id, startTab) {
+  const film = FILM_BY_ID[id];
+  if (!film) return viewNotFound();
+  const m = film.m, tabList = film.upcoming ? [["advance", "Advance"]] : [["days", "Day-wise"], ["advance", "Advance"], ["languages", "Languages"], ["worldwide", "Worldwide"], ["occupancy", "Shows and seats"]];
+  let tab = tabList.some(t => t[0] === startTab) ? startTab : tabList[0][0];
+  const body = h("div", { class: "tab-body", id: "filmTabBody" });
+  const renderers = { days: tabDays, advance: tabAdvance, languages: tabLanguages, worldwide: tabWorldwide, occupancy: tabShows };
+  const pick = k => { tab = k; setPressed(tabsEl, k); body.replaceChildren(renderers[k](film)); paintLive(body); currentHash = `#/film/${id}/${k}`; try { history.replaceState(null, "", currentHash); } catch (e) { /* ignore */ } };
+  const tabsEl = tabs(tabList, tab, pick, `${film.f.title} views`);
+
+  const stage = film.upcoming ? h("span", { class: "badge b-fc" }, `Releases ${fmtWeekday(film.rel)} ${fmtDate(film.rel)}`) : h("span", { class: "badge b-stage" }, dayLabel(film));
+  const head = h("header", { class: "film-head", style: { "--h": film.hue } }, poster(film, "lg"),
+    h("div", { class: "film-info" },
+      h("nav", { class: "crumbs", "aria-label": "Breadcrumb" }, h("a", { href: "#/" }, "Home"), " / ", h("a", { href: `#/industry/${film.f.ind}` }, film.ind.label), " / ", film.f.title),
+      h("h1", { id: "pageTitle", tabindex: "-1" }, film.f.title),
+      h("p", { class: "muted" }, `${film.f.genre} · ${film.f.cert} · ${film.f.runtime} min · ${Object.keys(film.f.langs).join(", ")}`),
+      h("p", null, film.f.about),
+      h("div", { class: "film-badges" }, stage, film.upcoming ? null : verdictBadge(film), sampleBadge(), film.upcoming ? followButton(id) : null)));
+
+  let stats;
+  if (film.upcoming) {
+    const a = film.advance[0];
+    stats = h("div", { class: "stat-grid" }, statCard("Opens in", `${film.daysToRelease} days`, fmtDate(film.rel)), statCard("Advance so far", a.advance > 0 ? money(m, a.advance) : "Not open yet", a.advance > 0 ? `${nfIN.format(a.tickets)} tickets` : "Advance opens close to release"),
+      statCard("Opening day outlook", `${money(m, film.f.d1 * .85)} to ${money(m, film.f.d1 * 1.15)}`, "Sample range, not a forecast"), statCard("Screens", nfIN.format(film.f.screens), "Sample count"));
+  } else {
+    stats = h("div", { class: "stat-grid" },
+      statCard("Today, live estimate", liveSpan(film, "live"), [liveSpan(film, "pace")], "stat-live"),
+      statCard("Today, early estimate", money(m, film.today.proj), film.change != null ? [trend(film.change), " vs yesterday"] : "Opening day"),
+      statCard("Total so far", liveSpan(film, "total"), `Since ${fmtDate(film.rel)}`),
+      statCard("Shows today", nfIN.format(film.shows[film.age].total.shows), `${nfIN.format(film.soldNow)} tickets sold so far`),
+      statCard("Budget recovered", `${Math.round(film.recovery)}%`, [meter(film.recovery, film.f.title), h("small", { class: "muted block" }, `Budget ${money(m, film.f.budget)} (sample)`)]));
+  }
+
+  const weeks = film.weeks ? panel("Week by week", h("ul", { class: "side-list" }, film.weeks.map(w => h("li", null, h("span", null, `Week ${w.week}`, w.days < 7 ? h("small", { class: "muted" }, ` (${w.days} days)`) : null), h("b", null, money(m, w.net)))))) : null;
+  const regionPanel = film.upcoming ? null : panel("Where today's money is coming from", h("ul", { class: "bars-list" }, film.regions.map(r => h("li", null,
+    h("span", null, r.name), h("span", { class: "bar-track", "aria-hidden": "true" }, h("span", { class: "bar-fill", style: { width: `${Math.min(100, r.share * 220)}%` } })), h("b", null, `${Math.round(r.share * 100)}%`)))), h("p", { class: "note" }, "Share of today's collection by region. Sample split."));
+  const related = FILMS.filter(f => f.f.ind === film.f.ind && f !== film && !f.upcoming).slice(0, 4);
+  const relatedPanel = related.length ? panel(`More ${film.ind.label}`, h("ul", { class: "side-list" }, related.map(f => h("li", null, filmLink(f), h("small", { class: "muted" }, money(f.m, f.total)))))) : null;
+
+  pick(tab);
+  const node = cols([head, stats, h("section", { class: "panel", "aria-label": "Collections" }, tabsEl, body), h("p", { class: "note" }, "All figures on this page are illustrative placeholders generated for the sample site. They are not real box-office data.")], [weeks, regionPanel, relatedPanel, sideClocks()].filter(Boolean));
+  return { title: `${film.f.title} box office collection | OliveReel`, node };
+}
+
+/* ---------- LIVE ---------- */
+function viewLive() {
+  const out = h("div");
+  const paint = () => {
+    const mk = MARKETS[mem.marketTab], films = RUNNING.filter(f => f.m.key === mk.key);
+    const rows = films.map(f => h("tr", null,
+      h("td", null, filmLink(f), h("small", { class: "muted block" }, `${f.ind.label} · ${dayLabel(f)}`)),
+      h("td", { class: "num live-cell" }, liveSpan(f, "live")), h("td", { class: "num" }, money(mk, f.today.proj)),
+      h("td", { class: "num" }, f.yesterday ? money(mk, f.yesterday.v) : "–"), h("td", null, f.change != null ? trend(f.change) : "–"),
+      h("td", { class: "num" }, nfIN.format(f.shows[f.age].total.shows)), h("td", { class: "num" }, nfIN.format(f.soldNow)),
+      h("td", { class: "num" }, `${f.occ[f.occ.length - 1].avg}%`), h("td", null, sparkline(f.days.map(d => d.isToday ? d.proj : d.v), "spark-live"))));
+    out.replaceChildren(
+      h("div", { class: "panel-head" }, h("span", { class: "muted" }, h("span", { "data-updated": mk.key, class: "upd" }), ` · amounts in ${mk.unitName}`)),
+      films.length ? barChart({ bars: films.map(f => ({ label: f.f.title.length > 11 ? f.f.title.slice(0, 10) + "…" : f.f.title, value: f.today.proj, kind: "live", tip: `${f.f.title}: ${money(mk, f.today.proj)} early estimate` })), unit: `Early estimate, ${mk.unitName}`, title: `Today's early estimates, ${mk.name}`, desc: films.map(f => `${f.f.title} ${money(mk, f.today.proj)}`).join("; ") }) : empty("No film in its first two weeks in this market right now."),
+      films.length ? h("div", { class: "table-wrap" }, h("table", null, h("thead", null, h("tr", null, ["Film", "Today so far", "Early estimate", "Yesterday", "Change", "Shows today", "Tickets sold so far", "Occupancy (est.)", "Last days"].map(t => h("th", { scope: "col" }, t)))), h("tbody", null, rows))) : null,
+      h("p", { class: "note" }, "Live estimate is what has come in so far today. Early estimate is the projected full-day net. Sample figures refresh every minute."));
+    paintLive(out);
+  };
+  const main = [pageHead("Live box office", "Today's collections as they build, for films in their first two weeks.", marketTabs(paint)), panel(null, out)];
+  paint();
+  return { title: "Live box office | OliveReel", node: cols(main, [sideInCinemas(), sideClocks(), sideUpcoming(3)]) };
+}
+
+/* ---------- BOX OFFICE LISTS ---------- */
+function viewBoxOffice() {
+  const out = h("div");
+  const lists = [["total", "Top films"], ["opening", "Top openers"], ["industry", "By industry"], ["yearly", "Yearly totals"]];
+  const paint = () => {
+    const mk = MARKETS[mem.marketTab], films = filmsOf(mk.key);
+    setPressed(listTabs, mem.listTab);
+    let body;
+    if (mem.listTab === "total") body = filmsTable(films);
+    else if (mem.listTab === "opening") {
+      const top = [...films].sort((a, b) => b.f.d1 - a.f.d1).slice(0, 10);
+      body = h("div", null, barChart({ bars: top.map(f => ({ label: f.f.title.length > 11 ? f.f.title.slice(0, 10) + "…" : f.f.title, value: f.f.d1, kind: "done", tip: `${f.f.title}: ${money(mk, f.f.d1)} on day 1` })), unit: `Day 1 net, ${mk.unitName}`, title: `Top opening days, ${mk.name}`, desc: top.map(f => `${f.f.title} ${money(mk, f.f.d1)}`).join("; ") }),
+        h("div", { class: "table-wrap" }, h("table", null, h("thead", null, h("tr", null, ["#", "Film", "Released", "Day 1 net"].map(t => h("th", { scope: "col" }, t)))), h("tbody", null, top.map((f, i) => h("tr", null, h("td", null, i + 1), h("td", null, filmLink(f)), h("td", null, fmtDate(f.rel)), h("td", { class: "num" }, money(mk, f.f.d1))))))));
+    } else if (mem.listTab === "industry") {
+      const inds = INDUSTRIES.filter(i => i.market === mk.key).map(i => ({ i, list: films.filter(f => f.f.ind === i.key) })).map(x => ({ ...x, total: x.list.reduce((s, f) => s + f.total, 0) }));
+      body = h("div", { class: "ind-grid" }, inds.map(x => h("a", { class: "ind-card", href: `#/industry/${x.i.key}`, style: { "--h": x.i.hue } }, h("strong", null, x.i.label), h("span", { class: "muted" }, x.i.lang), h("span", { class: "ind-num" }, money(mk, x.total)), h("span", { class: "muted" }, `${x.list.length} films tracked`))));
+    } else {
+      const y = YEARLY[mk.key];
+      body = h("div", null, lineChart({ labels: y.labels, series: [{ name: mk.name, values: y.values, cls: "line-a", area: true }], unit: `${mk.unitName}, illustrative`, title: `Yearly total collection, ${mk.name}`, desc: y.labels.map((l, i) => `${l}: ${nfIN.format(y.values[i])}`).join("; ") }),
+        h("p", { class: "note" }, `Illustrative yearly totals in ${mk.unitName}. Replace with a cited industry source.`));
+    }
+    out.replaceChildren(body);
+  };
+  const listTabs = tabs(lists, mem.listTab, k => { mem.listTab = k; paint(); }, "Choose list");
+  const main = [pageHead("Box office", "Rankings by total, opening day, industry and year.", marketTabs(paint)), panel(null, listTabs, out)];
+  paint();
+  return { title: "Box office lists | OliveReel", node: cols(main, [sideInCinemas(), sideClocks(), sideUpcoming(3)]) };
+}
+
+/* ---------- ADVANCE ---------- */
+function viewAdvance() {
+  const out = h("div");
+  const paint = () => {
+    const mk = MARKETS[mem.marketTab], films = RUNNING.filter(f => f.m.key === mk.key);
+    const rows = films.flatMap(f => f.advance.map((a, i) => h("tr", null, i === 0 ? h("th", { scope: "row", rowspan: String(f.advance.length) }, filmLink(f)) : null,
+      h("td", null, `Day ${a.i + 1} · ${fmtWeekday(a.date)} ${fmtShort(a.date)}`), h("td", { class: "num" }, money(mk, a.advance)), h("td", { class: "num" }, nfIN.format(a.tickets)), h("td", { class: "num" }, `~${money(mk, a.est)}`))));
+    out.replaceChildren(films.length ? h("div", { class: "table-wrap" }, h("table", null, h("thead", null, h("tr", null, ["Film", "Day", "Advance (gross)", "Tickets sold", "Early estimate (net)"].map(t => h("th", { scope: "col" }, t)))), h("tbody", null, rows))) : empty("No running film has advance booking data in this market."),
+      h("p", { class: "note" }, `Amounts in ${mk.unitName}. Advance is gross ticket value already sold for each day. Sample figures only.`));
+  };
+  const up = UPCOMING.map(f => h("article", { class: "up-card", style: { "--h": f.hue } }, poster(f, "sm"),
+    h("div", null, h("h3", null, filmLink(f)), h("p", { class: "muted" }, `${f.ind.label} · ${fmtWeekday(f.rel)} ${fmtDate(f.rel)}`),
+      h("p", null, f.advance[0].advance > 0 ? `Advance so far: ${money(f.m, f.advance[0].advance)}` : `Advance opens close to release (${f.daysToRelease} days to go)`)), followButton(f.f.id)));
+  const main = [pageHead("Advance booking", "Tickets already sold for the next days, and what is releasing soon.", marketTabs(paint)), panel("Running films", out), panel("Upcoming releases", h("div", { class: "up-grid" }, up))];
+  paint();
+  return { title: "Advance booking | OliveReel", node: cols(main, [sideInCinemas(), sideClocks()]) };
+}
+
+/* ---------- COMPARE ---------- */
+function viewCompare(params) {
+  const pool = FILMS.filter(f => !f.upcoming), out = h("div");
+  let a = FILM_BY_ID[params.get("a")] && !FILM_BY_ID[params.get("a")].upcoming ? params.get("a") : "vajra-prabha";
+  let b = params.get("b");
+  const selA = h("select", { id: "cmpA", class: "select" }), selB = h("select", { id: "cmpB", class: "select" });
+  const fillB = () => {
+    const mk = FILM_BY_ID[a].m.key, opts = pool.filter(f => f.m.key === mk && f.f.id !== a);
+    if (!opts.some(f => f.f.id === b)) b = (opts.find(f => f.f.id !== a) || opts[0]).f.id;
+    selB.replaceChildren(...opts.map(f => h("option", { value: f.f.id, selected: f.f.id === b }, f.f.title)));
+  };
+  selA.replaceChildren(...pool.map(f => h("option", { value: f.f.id, selected: f.f.id === a }, `${f.f.title} (${f.m.name})`)));
+  const paint = () => {
+    const A = FILM_BY_ID[a], B = FILM_BY_ID[b], m = A.m, n = Math.min(A.days.length, B.days.length);
+    const cum = f => f.cum.slice(0, n);
+    const best = f => Math.max(...f.days.map(d => d.isToday ? d.proj : d.v));
+    const avgOcc = f => Math.round(f.occ.reduce((s, o) => s + o.avg, 0) / f.occ.length);
+    const rowsDef = [["Industry", f => f.ind.label], ["Released", f => fmtDate(f.rel)], ["Day 1 net", f => money(m, f.f.d1)], ["Total so far (live)", f => money(m, f.total)], [`Total after ${n} day(s)`, f => money(m, f.cum[n - 1])], ["Best day (net)", f => money(m, best(f))], ["Today, early estimate", f => money(m, f.today.proj)], ["Average occupancy", f => `${avgOcc(f)}%`], ["Budget recovered", f => `${Math.round(f.recovery)}%`], ["Verdict", f => verdictBadge(f)]];
+    out.replaceChildren(
+      lineChart({ labels: Array.from({ length: n }, (_, i) => `D${i + 1}`), series: [{ name: A.f.title, values: cum(A), cls: "line-a" }, { name: B.f.title, values: cum(B), cls: "line-b" }], unit: `Cumulative net, ${m.unitName}`, title: `${A.f.title} against ${B.f.title}, cumulative net`, desc: `Cumulative net over the first ${n} days.` }),
+      h("div", { class: "legend" }, h("span", null, h("i", { class: "sw line-a" }), A.f.title), h("span", null, h("i", { class: "sw line-b" }), B.f.title)),
+      h("div", { class: "table-wrap" }, h("table", null, h("thead", null, h("tr", null, h("th", { scope: "col" }, "Measure"), h("th", { scope: "col" }, A.f.title), h("th", { scope: "col" }, B.f.title))), h("tbody", null, rowsDef.map(([l, fn]) => h("tr", null, h("th", { scope: "row" }, l), h("td", null, fn(A)), h("td", null, fn(B))))))),
+      h("p", { class: "note" }, `Both films are compared over the same first ${n} day(s). Only films from the same market can be compared because amounts are in ${m.unitName}.`));
+  };
+  selA.addEventListener("change", () => { a = selA.value; fillB(); paint(); });
+  selB.addEventListener("change", () => { b = selB.value; paint(); });
+  fillB(); paint();
+  const main = [pageHead("Compare films", "Put two films from the same market side by side."), panel(null, h("div", { class: "cmp-pick" }, h("label", { for: "cmpA" }, "First film", selA), h("label", { for: "cmpB" }, "Second film", selB)), out)];
+  return { title: "Compare films | OliveReel", node: cols(main, [sideInCinemas(), sideClocks()]) };
+}
+
+/* ---------- NEWS ---------- */
+function viewNews() {
+  const out = h("div"), tags = ["all", ...new Set(NEWS.map(n => n.tag))];
+  const paint = () => { setPressed(filters, mem.newsFilter); out.replaceChildren(newsCards(NEWS.filter(n => mem.newsFilter === "all" || n.tag === mem.newsFilter))); };
+  const filters = tabs(tags.map(t => [t, t === "all" ? "All" : t]), mem.newsFilter, k => { mem.newsFilter = k; paint(); }, "Filter reports");
+  const main = [pageHead("Reports", "Box office updates and industry stories."), panel(null, filters, out, h("p", { class: "note" }, "These are sample cards. They are not current news and do not link to published articles."))];
+  paint();
+  return { title: "Reports | OliveReel", node: cols(main, [sideInCinemas(), sideClocks()]) };
+}
+
+/* ---------- ABOUT / METHODOLOGY ---------- */
+function viewAbout() {
+  const defs = [["Net", "Ticket revenue after tax, which is how most Indian trade reports quote a film's collection."], ["Gross", "Ticket revenue including tax."], ["Live estimate", "What has been collected so far today, shown while shows are still running."], ["Early estimate", "The projected full-day net, shown before the day closes. It is revised as data arrives."], ["Advance booking", "Gross value of tickets already sold for a future day."], ["Occupancy", "The share of seats sold across tracked shows."], ["Budget recovered", "Total net divided by the film's budget. Used for the verdict."]];
+  const verdicts = [["Blockbuster", "250% or more of budget"], ["Super hit", "150% to 249%"], ["Hit", "100% to 149%"], ["Average", "80% to 99%"], ["Below average", "50% to 79%"], ["Flop", "Under 50%"], ["Too early", "Fewer than 7 days in cinemas"]];
+  const main = [pageHead("How the numbers work", "Definitions and verdict rules used across OliveReel."),
+    panel("This is a sample build", h("p", null, "Every title, figure and report on this site is an illustrative placeholder generated by code. None of it is real box-office data. Before publishing, replace the sample engine with verified figures and show a source and a last-updated time next to each number.")),
+    panel("Definitions", h("dl", { class: "defs" }, defs.flatMap(([t, d]) => [h("dt", null, t), h("dd", null, d)]))),
+    panel("Verdict rules", h("div", { class: "table-wrap" }, h("table", null, h("thead", null, h("tr", null, h("th", { scope: "col" }, "Verdict"), h("th", { scope: "col" }, "Rule"))), h("tbody", null, verdicts.map(([v, r]) => h("tr", null, h("th", { scope: "row" }, v), h("td", null, r)))))))];
+  return { title: "How the numbers work | OliveReel", node: cols(main, [sideInCinemas(), sideClocks()]) };
+}
+
+function viewNotFound() {
+  return { title: "Page not found | OliveReel", node: h("div", { class: "panel notfound" }, h("h1", { id: "pageTitle", tabindex: "-1" }, "We could not find that page"), h("p", null, "The link may be old, or the film is not tracked in this sample."), h("a", { class: "btn btn-primary", href: "#/" }, "Go to the home page")) };
+}
+
+"use strict";
+/* ============================================================
+   Router, header behaviour, search, theme, clocks, live refresh.
+   ============================================================ */
+
+const app = $("#app");
+let firstRoute = true;
+/* Current route lives in memory so navigation never depends on the browser changing the page address.
+   Inside a sandboxed preview frame a click on href="#/x" would navigate the frame to about:blank. */
+let currentHash = location.hash || "#/";
+
+function parseHash() {
+  const raw = currentHash.replace(/^#\/?/, ""), [pathPart, query = ""] = raw.split("?");
+  return { parts: pathPart.split("/").filter(Boolean).map(decodeURIComponent), params: new URLSearchParams(query) };
+}
+function resolveRoute() {
+  const { parts, params } = parseHash(), [a, b, c] = parts;
+  switch (a) {
+    case undefined: return viewHome();
+    case "industry": return viewIndustry(b);
+    case "film": return viewFilm(b, c);
+    case "live": return viewLive();
+    case "box-office": return viewBoxOffice();
+    case "advance": return viewAdvance();
+    case "compare": return viewCompare(params);
+    case "news": return viewNews();
+    case "about": return viewAbout();
+    default: return viewNotFound();
+  }
+}
+function viewError() {
+  return { title: "Something went wrong | OliveReel", node: h("div", { class: "panel notfound" }, h("h1", { id: "pageTitle", tabindex: "-1" }, "This page did not load"), h("p", null, "Something broke while building the page. Reload to try again."), h("a", { class: "btn btn-primary", href: "#/" }, "Go to the home page")) };
+}
+function updateNav() {
+  const here = currentHash.replace(/^#/, "") || "/";
+  $$("header nav a, .subnav a").forEach(a => {
+    const target = a.getAttribute("href").replace(/^#/, "");
+    const on = target === "/" ? here === "/" : here === target || here.startsWith(target + "/");
+    if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+  });
+}
+function route() {
+  cleanups.splice(0).forEach(fn => { try { fn(); } catch (e) { /* ignore */ } });
+  let view;
+  try { view = resolveRoute(); } catch (err) { console.error("Route failed", err); view = viewError(); }
+  app.replaceChildren(view.node);
+  document.title = view.title;
+  paintLive(app); tickClocks(); updateNav();
+  $("#menu").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded", "false");
+  if (!firstRoute) {
+    window.scrollTo(0, 0);
+    const t = $("#pageTitle"); if (t) t.focus({ preventScroll: true });
+  }
+  firstRoute = false;
+}
+
+/* Re-draw the current page after data changes, keeping the scroll position. */
+function rerender() { const y = window.scrollY; firstRoute = true; route(); window.scrollTo(0, y); }
+
+/* ---------- clocks ---------- */
+const clockFmt = {};
+function clockFor(tz) { return clockFmt[tz] || (clockFmt[tz] = new Intl.DateTimeFormat("en-IN", { timeZone: tz, hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true })); }
+function tickClocks() {
+  if (document.hidden) return;
+  const now = new Date();
+  $$(".clock-time[data-tz]").forEach(el => { el.textContent = clockFor(el.dataset.tz).format(now).toUpperCase(); });
+}
+
+/* ---------- live refresh (updates numbers in place) ---------- */
+function refreshModels() {
+  FILMS.forEach(f => { if (!f.upcoming) Object.assign(f, computeFilm(f.f)); });
+  paintLive(app);
+}
+
+/* ---------- theme ---------- */
+const THEME_KEY = "olivereel-theme";
+function applyTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  const b = $("#themeBtn"); if (b) { b.setAttribute("aria-pressed", String(t === "light")); b.setAttribute("aria-label", t === "light" ? "Switch to dark theme" : "Switch to light theme"); b.textContent = t === "light" ? "☾" : "☀"; }
+}
+function initTheme() {
+  let t = "dark";
+  try { t = localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark"; } catch (e) { /* storage blocked */ }
+  applyTheme(t);
+  $("#themeBtn").addEventListener("click", () => {
+    const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+    applyTheme(next); try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
+  });
+}
+
+/* ---------- search ---------- */
+function initSearch() {
+  const btn = $("#searchBtn"), panelEl = $("#searchPanel"), input = $("#searchInput"), list = $("#searchResults");
+  const close = () => { panelEl.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+  const results = q => {
+    q = q.trim().toLowerCase();
+    list.replaceChildren();
+    if (!q) return [];
+    const hits = FILMS.filter(f => `${f.f.title} ${f.ind.label} ${Object.keys(f.f.langs).join(" ")}`.toLowerCase().includes(q)).slice(0, 6);
+    if (!hits.length) list.append(h("li", { class: "muted" }, "No film matches. Try a title, an industry or a language."));
+    hits.forEach(f => list.append(h("li", null, h("a", { href: `#/film/${f.f.id}`, onclick: close }, f.f.title, h("small", { class: "muted" }, ` ${f.ind.label}${f.upcoming ? ", releasing soon" : ""}`)))));
+    return hits;
+  };
+  btn.addEventListener("click", () => {
+    const open = panelEl.hidden; panelEl.hidden = !open; btn.setAttribute("aria-expanded", String(open));
+    if (open) input.focus(); else btn.focus();
+  });
+  input.addEventListener("input", () => results(input.value));
+  input.addEventListener("keydown", e => {
+    if (e.key === "Escape") { close(); btn.focus(); }
+    if (e.key === "Enter") { const first = $("a", list); if (first) { const target = first.getAttribute("href"); close(); input.value = ""; list.replaceChildren(); navigate(target); } }
+  });
+}
+
+/* ---------- menu ---------- */
+function initMenu() {
+  const btn = $("#menuBtn"), menu = $("#menu");
+  btn.addEventListener("click", () => { const open = menu.classList.toggle("open"); btn.setAttribute("aria-expanded", String(open)); });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && menu.classList.contains("open")) { menu.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); btn.focus(); }
+  });
+}
+
+/* ---------- start ---------- */
+$("#yr").textContent = String(new Date().getFullYear());
+initTheme(); initSearch(); initMenu();
+/* ---------- navigation ---------- */
+function navigate(hash, replace = false) {
+  currentHash = hash;
+  try { history[replace ? "replaceState" : "pushState"](null, "", hash); } catch (e) { /* frames that forbid it still route correctly */ }
+  route();
+}
+function syncFromLocation() {
+  const h = location.hash || "#/";
+  if (h !== currentHash) { currentHash = h; route(); }
+}
+document.addEventListener("click", e => {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const a = e.target.closest && e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const href = a.getAttribute("href");
+  e.preventDefault();
+  if (href.startsWith("#/")) navigate(href);
+  else { app.focus({ preventScroll: true }); app.scrollIntoView(); } /* skip link */
+});
+window.addEventListener("hashchange", syncFromLocation);
+window.addEventListener("popstate", syncFromLocation);
+route();
+setInterval(tickClocks, 1000);
+setInterval(refreshModels, 60000);
+
+</script>
+</body>
+</html>
